@@ -1,26 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import Home from "./Home";
+import QuizList from "./QuizList";
+import Quiz from "./Quiz";
+import Editor from "./Editor";
 
-function App() {
+const App = () => {
+  const [view, setView] = useState("home");
+  const [quiz, setQuiz] = useState(null);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {view === "home" && <Home setView={setView} />}
+      {view === "quizList" && <QuizList setView={setView} setQuiz={setQuiz} />}
+      {view === "quiz" && <Quiz quiz={quiz} setView={setView} />}
+      {view === "editor" && <Editor quiz={quiz} setView={setView} />}
     </div>
   );
-}
+};
 
 export default App;

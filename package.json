@@ -1,5 +1,6 @@
 {
   "name": "bayesian-quiz",
+  "homepage": "https://bayes-up.web.app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -11,6 +12,8 @@
     "react-scripts": "3.3.0"
   },
   "scripts": {
+    "predeploy": "yarn build",
+    "deploy": "firebase deploy",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
