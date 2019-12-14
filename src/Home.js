@@ -8,12 +8,13 @@ export default ({ setView }) => {
       <h1>Bayesian Quiz</h1>
       <h1>[This is a Prototype]</h1>
       <h2>
-        This app lets you create and answer Bayesian Multiple Choice Quiz. They
-        are the same as MCQ except that instead of selecting an answer, you
-        select probabilities you assign to each possible choice. Have fun
+        This app lets you answer Bayesian Multiple Choice Quiz. They are the
+        same as MCQ except that instead of selecting an answer, you select
+        probabilities you assign to each possible choice. Have fun
       </h2>
-      <button onClick={() => setView("editor")}>Create a Quiz</button>
+      {/* <button onClick={() => setView("editor")}>Create a Quiz</button> */}
       <button onClick={() => setView("quizList")}>Take a Quiz</button>
+      <button onClick={() => setView("stats")}>See my Stats</button>
     </div>
   );
 };

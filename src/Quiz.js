@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { getColor } from "./utils";
+import { db, login } from "./";
+import * as firebase from "firebase/app";
 
 const ProgressBar = ({ progress }) => {
   const p = Math.round(progress * 100);
@@ -34,13 +36,21 @@ const Choice = ({ choice, guess, setGuess, background, submitted }) => {
   );
 };
 
-export default ({ quiz, setView }) => {
+export default ({ quiz, setView, setQuiz }) => {
   const [background, setBackground] = useState(getColor);
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [guesses, setGuesses] = useState(null);
   const [choiceList, setChoiceList] = useState(null);
   const [totalScore, setTotalScore] = useState(0);
+
+  if (!quiz) {
+    return (
+      <div id="quizend" className="rootColumn" style={{ background }}>
+        <p>Loading quiz</p>
+      </div>
+    );
+  }
 
   if (step >= quiz.questions.length) {
     return (
@@ -50,7 +60,14 @@ export default ({ quiz, setView }) => {
           You score a total of {totalScore.toFixed(1)} out of{" "}
           {10 * quiz.questions.length} points.
         </h2>
-        <button onClick={() => setView("home")}>Go Back Home</button>
+        <button
+          onClick={() => {
+            setView("home");
+            setQuiz(null);
+          }}
+        >
+          Go Back Home
+        </button>
       </div>
     );
   }
@@ -75,7 +92,7 @@ export default ({ quiz, setView }) => {
         <Choice
           key={question + c}
           choice={c}
-          background={submitted ? (i === 0 ? "green" : "red") : "#bbbbbb"}
+          background={submitted && i === 0 ? "green" : "#bbbbbb"}
           submitted={submitted}
           guess={guesses[i]}
           setGuess={x => {
@@ -89,6 +106,32 @@ export default ({ quiz, setView }) => {
           disabled={totalGuess !== 100}
           onClick={() => {
             setSubmitted(true);
+            console.log(login);
+            console.log(db);
+            db.collection("events").add({
+              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              guesses,
+              userid: login
+            });
+
+            const [correctGuess, ...incorrectGuesses] = guesses;
+            const _update = incorrectGuesses.reduce(
+              (acc, val) => {
+                const key = `Incorrect_${Math.round(100 * val)}%`;
+                acc[key] = acc[key] ? acc[key] + 1 : 1;
+                return acc;
+              },
+              {
+                [`Correct_${Math.round(100 * correctGuess)}%`]: 1
+              }
+            );
+            const update = Object.entries(_update).reduce((acc, [k, v]) => {
+              acc[k] = firebase.firestore.FieldValue.increment(v);
+              return acc;
+            }, {});
+            db.collection("stats")
+              .doc(login)
+              .update(update);
           }}
         >
           Submit
