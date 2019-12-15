@@ -40,28 +40,63 @@ export default ({ setView }) => {
       </div>
     );
 
-  console.log(stats);
+  const { groups, current } = new Array(101).fill(0).reduce(
+    ({ count, groups, current }, _, target) => {
+      const s = stats[`correct_${target}%`] || 0; // number of correct answer
+      const f = stats[`incorrect_${target}%`] || 0; // number of incorrect answer
+      const n = s + f; // number of answers
+
+      if (n === 0) return { count, groups, current };
+      current.push(target);
+      if (count + n > 100) {
+        groups.push(current);
+        return { count: 0, groups, current: [] };
+      } else {
+        return { count: count + n, groups, current };
+      }
+    },
+    { count: 0, groups: [], current: [] }
+  );
+  groups.push(current);
+
+  const _stats = groups.map(group => {
+    const [S, F, A, N] = group.reduce(
+      ([S, F, A, N], target) => {
+        const s = stats[`correct_${target}%`] || 0; // number of correct answer
+        const f = stats[`incorrect_${target}%`] || 0; // number of incorrect answer
+        const n = s + f; // number of answers
+        return [S + s, F + f, A + n * target, N + n];
+      },
+      [0, 0, 0, 0]
+    );
+    const target = A / N;
+    const interval =
+      group.length === 1 ? "" : ` (${group[0]}%~${group[group.length - 1]}%)`;
+    const avg = (S + 1) / (N + 2);
+    const std = (((S + 1) * (F + 1)) / (N + 3)) ** 0.5 / (N + 2);
+    return [target, interval, avg, std, N];
+  });
+
   return (
     <div id="stats" className="rootColumn" style={{ background }}>
       <table>
         <thead>
           <tr>
             <th>Target</th>
-            <th>Actual</th>
-            <th>Count</th>
+            <th>Avg</th>
+            <th>Std</th>
           </tr>
         </thead>
         <tbody>
-          {new Array(101).fill(0).map((_, target) => {
-            const correctCount = stats[`correct_${target}%`] || 0;
-            const incorrectCount = stats[`incorrect_${target}%`] || 0;
-            const totalCount = correctCount + incorrectCount;
+          {_stats.map(([target, interval, avg, std, N]) => {
             return (
-              totalCount > 0 && (
+              N > 0 && (
                 <tr key={target}>
-                  <th>{target}%</th>
-                  <th>{Math.round((100 * correctCount) / totalCount)}%</th>
-                  <th>{totalCount}</th>
+                  <th>
+                    {target.toFixed()}%{interval}
+                  </th>
+                  <th>{(100 * avg).toFixed(0)}%</th>
+                  <th>±{(100 * std).toFixed(0)}%</th>
                 </tr>
               )
             );
