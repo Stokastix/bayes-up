@@ -106,9 +106,13 @@ h2 {
   padding: 8px;
   border-radius: 4px;
   background: #bbbbbb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .choice {
+  width: 100%;
   display: flex;
   align-items: center;
 }
@@ -130,7 +134,7 @@ h2 {
 
 table {
   width: 496px;
-  max-width: calc(100% - 16px);
+  max-width: calc(100% - 20px);
   margin: 8px 0px;
   border: 4px solid black;
   border-collapse: collapse;

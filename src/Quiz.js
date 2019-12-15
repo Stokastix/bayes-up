@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { getColor } from "./utils";
-import { db, login } from "./";
+import { db } from "./";
 import * as firebase from "firebase/app";
 import Choice from "./ChoiceBox";
 
@@ -42,7 +42,7 @@ export default ({ quiz, setView, setQuiz }) => {
 
   const [question, ...choices] = quiz.questions[step];
   if (guesses === null) {
-    setGuesses(choices.map(_ => Math.round(100 / choices.length)));
+    setGuesses(choices.map(_ => 0));
     setChoiceList(
       choices.map((c, i) => [c, i]).sort(() => 0.5 - Math.random())
     );
@@ -61,21 +61,26 @@ export default ({ quiz, setView, setQuiz }) => {
 
   const handleSubmit = () => {
     setSubmitted(true);
+
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    const userid = user.uid;
+
     db.collection("events").add({
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       guesses,
-      userid: login
+      userid
     });
 
     const [correctGuess, ...incorrectGuesses] = guesses;
     const _update = incorrectGuesses.reduce(
       (acc, val) => {
-        const key = `Incorrect_${Math.round(100 * val)}%`;
+        const key = `incorrect_${Math.round(val)}%`;
         acc[key] = acc[key] ? acc[key] + 1 : 1;
         return acc;
       },
       {
-        [`Correct_${Math.round(100 * correctGuess)}%`]: 1
+        [`correct_${Math.round(correctGuess)}%`]: 1
       }
     );
     const update = Object.entries(_update).reduce((acc, [k, v]) => {
@@ -83,8 +88,8 @@ export default ({ quiz, setView, setQuiz }) => {
       return acc;
     }, {});
     db.collection("stats")
-      .doc(login)
-      .update(update);
+      .doc(userid)
+      .set(update, { merge: true });
   };
 
   return (

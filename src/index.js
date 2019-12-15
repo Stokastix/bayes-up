@@ -32,34 +32,8 @@ const ensureLoggedIn = () => {
 
   db.collection("stats")
     .doc(newLogin)
-    .set({
-      "Correct_0%": 0,
-      "Correct_10%": 0,
-      "Correct_20%": 0,
-      "Correct_30%": 0,
-      "Correct_40%": 0,
-      "Correct_50%": 0,
-      "Correct_60%": 0,
-      "Correct_70%": 0,
-      "Correct_80%": 0,
-      "Correct_90%": 0,
-      "Correct_100%": 0,
-      "Incorrect_0%": 0,
-      "Incorrect_10%": 0,
-      "Incorrect_20%": 0,
-      "Incorrect_30%": 0,
-      "Incorrect_40%": 0,
-      "Incorrect_50%": 0,
-      "Incorrect_60%": 0,
-      "Incorrect_70%": 0,
-      "Incorrect_80%": 0,
-      "Incorrect_90%": 0,
-      "Incorrect_100%": 0
-    });
+    .set({});
 };
-ensureLoggedIn();
-
-export const login = localStorage.getItem("bayes-up-login-token");
 
 ReactDOM.render(<App />, document.getElementById("root"));
 

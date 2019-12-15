@@ -1,22 +1,10 @@
 import React from "react";
 import Slider from "@material-ui/core/Slider";
-import Input from "@material-ui/core/Input";
 
 export default ({ choice, guess, setGuess, background, submitted }) => {
   const handleSliderChange = (event, newValue) => {
     if (submitted) return;
     setGuess(newValue);
-  };
-
-  const handleInputChange = event => {
-    if (submitted) return;
-    setGuess(event.target.value === "" ? "" : Number(event.target.value));
-  };
-
-  const handleBlur = () => {
-    if (submitted) return;
-    if (guess < 0) setGuess(0);
-    if (guess > 100) setGuess(100);
   };
 
   return (
@@ -35,11 +23,12 @@ export default ({ choice, guess, setGuess, background, submitted }) => {
         >
           +
         </button>
-      </div>{" "}
+      </div>
       <Slider
         value={typeof guess === "number" ? guess : 0}
         onChange={handleSliderChange}
         aria-labelledby="input-slider"
+        style={{ width: "70%" }}
       />
       <span>{guess}%</span>
     </div>

@@ -6,7 +6,8 @@ export default ({ setView }) => {
   return (
     <div id="home" className="rootColumn" style={{ background }}>
       <h1>Bayesian Quiz</h1>
-      <h1>[This is a Prototype]</h1>
+      <h1>[This is a Work in Progress]</h1>
+      <h1>[Expect to see features break, disappear, or change quickly]</h1>
       <h2>
         This app lets you answer Bayesian Multiple Choice Quiz. They are the
         same as MCQ except that instead of selecting an answer, you select

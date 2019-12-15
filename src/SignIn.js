@@ -1,21 +1,18 @@
-import React from 'react';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import * as firebaseui from 'firebaseui'
+import React from "react";
+import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import * as firebaseui from "firebaseui";
 import * as firebase from "firebase/app";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class SignIn extends React.Component {
-
   constructor(props) {
     super(props);
-    this.state = {
-      isSignedIn: false // Local signed-in state.
-    };
-    this.setLoggedIn = props.setLoggedIn;
+    this.state = { isSignedIn: null };
 
-      // Configure FirebaseUI.
+    // Configure FirebaseUI.
     this.uiConfig = {
       // Popup signin flow rather than redirect flow.
-      signInFlow: 'popup',
+      signInFlow: "popup",
       // We will display Google and Facebook as auth providers.
       signInOptions: [
         firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -33,24 +30,32 @@ class SignIn extends React.Component {
 
   // Listen to the Firebase Auth state and set the local state.
   componentDidMount() {
-    this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(
-        (user) => {
-          this.setState({isSignedIn: !!user});
-          this.setLoggedIn(!!user);
-        }
-    );
+    this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
+      this.setState({ isSignedIn: !!user });
+      this.props.setLoggedIn(!!user);
+      console.log(user);
+    });
   }
-  
+
   // Make sure we un-register Firebase observers when the component unmounts.
   componentWillUnmount() {
     this.unregisterAuthObserver();
   }
 
   render() {
-    const button = <StyledFirebaseAuth uiConfig={this.uiConfig} firebaseAuth={firebase.auth()} style={{backgroundColor:"blue"}} />;
     return (
-      <>{!this.state.isSignedIn && button}</>
-  
+      <div className="rootColumn" style={{ background: "#666" }}>
+        <h1>Bayes Up</h1>
+        {this.state.isSignedIn === false ? (
+          <StyledFirebaseAuth
+            uiConfig={this.uiConfig}
+            firebaseAuth={firebase.auth()}
+            style={{ backgroundColor: "blue" }}
+          />
+        ) : (
+          <CircularProgress />
+        )}
+      </div>
     );
   }
 }

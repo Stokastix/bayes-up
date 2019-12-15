@@ -11,11 +11,13 @@ const App = () => {
   const [quiz, setQuiz] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
 
-  if(loggedIn){
+  if (loggedIn) {
     return (
       <div className="App">
         {view === "home" && <Home setView={setView} />}
-        {view === "quizList" && <QuizList setView={setView} setQuiz={setQuiz} />}
+        {view === "quizList" && (
+          <QuizList setView={setView} setQuiz={setQuiz} />
+        )}
         {view === "quiz" && (
           <Quiz quiz={quiz} setQuiz={setQuiz} setView={setView} />
         )}
@@ -24,12 +26,8 @@ const App = () => {
       </div>
     );
   } else {
-    return(
+    return (
       <div className="App">
-        <h1 style={{textAlign: "center"}}>
-          Bayes Up <br />
-          Login <br/>
-        </h1>
         <SignIn setLoggedIn={setLoggedIn} />
       </div>
     );
