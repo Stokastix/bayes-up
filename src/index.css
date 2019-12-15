@@ -33,8 +33,8 @@ code {
 }
 
 button {
-  min-height: 64px;
-  font-size: 32px;
+  min-height: 52px;
+  font-size: 150%;
   width: 500px;
   max-width: calc(100% - 16px);
   flex: 0 0 auto;
@@ -70,13 +70,14 @@ button:disabled {
 h1 {
   width: 500px;
   max-width: calc(100% - 16px);
-  font-size: 250%;
+  font-size: 150%;
+  margin: 4px;
 }
 
 h2 {
   width: 500px;
   max-width: calc(100% - 16px);
-  font-size: 150%;
+  font-size: 100%;
 }
 
 .progresscontainer {
@@ -102,8 +103,8 @@ h2 {
 .choiceContainer {
   width: 484px;
   max-width: calc(100% - 32px);
-  margin: 6px;
-  padding: 8px;
+  margin: 3px;
+  padding: 2px 8px;
   border-radius: 4px;
   background: #bbbbbb;
   display: flex;
@@ -118,10 +119,10 @@ h2 {
 }
 
 .choice button {
-  width: 48px;
-  height: 48px;
-  min-height: 48px;
-  font-size: 24px;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  font-size: 100%;
   font-weight: 900;
   border: 3px solid #000000;
   border-radius: 2px;
@@ -129,7 +130,7 @@ h2 {
 
 .choice span {
   flex: 1;
-  font-size: 28px;
+  font-size: 120%;
 }
 
 table {
@@ -147,4 +148,17 @@ td {
 
 th {
   padding: 8px;
+}
+
+.sliderContainer {
+  position: relative;
+  width: calc(100% - 16px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sliderValue {
+  flex: 0;
+  text-align: center;
 }
