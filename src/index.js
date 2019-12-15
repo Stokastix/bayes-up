@@ -24,17 +24,6 @@ firebase.initializeApp(firebaseConfig);
 
 export const db = firebase.firestore();
 
-const ensureLoggedIn = () => {
-  const x = localStorage.getItem("bayes-up-login-token");
-  if (x) return;
-  const newLogin = (Math.random() * 1000000000).toFixed(0);
-  localStorage.setItem("bayes-up-login-token", newLogin);
-
-  db.collection("stats")
-    .doc(newLogin)
-    .set({});
-};
-
 ReactDOM.render(<App />, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change
