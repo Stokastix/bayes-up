@@ -10,6 +10,7 @@ export default ({ setView, setLoggedIn }) => {
       <button
         onClick={() => {
           firebase.auth().signOut();
+          setView("home");
           setLoggedIn(false);
         }}
       >
