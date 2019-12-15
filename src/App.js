@@ -4,6 +4,7 @@ import QuizList from "./QuizList";
 import Quiz from "./Quiz";
 import Editor from "./Editor";
 import Stats from "./Stats";
+import Settings from "./Settings";
 import SignIn from "./SignIn";
 
 const App = () => {
@@ -23,6 +24,9 @@ const App = () => {
         )}
         {view === "editor" && <Editor quiz={quiz} setView={setView} />}
         {view === "stats" && <Stats setView={setView} />}
+        {view === "settings" && (
+          <Settings setView={setView} setLoggedIn={setLoggedIn} />
+        )}
       </div>
     );
   } else {
