@@ -37,7 +37,7 @@ const CustomSlider = withStyles({
     height: 32,
     width: 16,
     backgroundColor: "#fff",
-    border: "2px solid currentColor",
+    border: "2px solid #222",
     marginTop: -4,
     marginLeft: -8,
     borderRadius: 4,
@@ -47,11 +47,13 @@ const CustomSlider = withStyles({
   },
   track: {
     height: 24,
-    borderRadius: 4
+    borderRadius: 2,
+    backgroundColor: "#111"
   },
   rail: {
     height: 24,
-    borderRadius: 4
+    borderRadius: 2,
+    backgroundColor: "#333"
   }
 })(Slider);
 
