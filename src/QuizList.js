@@ -10,7 +10,7 @@ export default ({ setView, setQuiz }) => {
       const response = httpGet("https://opentdb.com/api_category.php");
       const { trivia_categories } = JSON.parse(response);
       setCategories(trivia_categories);
-    }, 10);
+    }, 1);
   }
 
   return (
@@ -39,7 +39,7 @@ export default ({ setView, setQuiz }) => {
                 ...x.incorrect_answers.map(atob)
               ]);
               setQuiz({ questions });
-            }, 10);
+            }, 1);
           }}
         >
           {name}
