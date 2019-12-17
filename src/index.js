@@ -2,8 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
 
-import "firebase/firestore";
 import * as firebase from "firebase/app";
+import "firebase/firestore";
+import "firebase/storage";
 
 import "./index.css";
 import App from "./App";
@@ -30,3 +31,5 @@ ReactDOM.render(<App />, document.getElementById("root"));
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.register();
+
+export const storageRef = firebase.storage().ref();
