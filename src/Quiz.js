@@ -92,6 +92,10 @@ export default ({ quiz, setView, setQuiz }) => {
       .set(update, { merge: true });
   };
 
+  const backButton = (
+    <button onClick={() => setView("quizList")}>Back to list</button>
+  );
+
   return (
     <div id="quiz" className="rootColumn" style={{ background }}>
       <h1>{question}</h1>
@@ -109,6 +113,7 @@ export default ({ quiz, setView, setQuiz }) => {
         <>
           <h2>Total guess: {totalGuess}%</h2>
           <button onClick={handleSubmit}>Submit</button>
+          {backButton}
         </>
       )}
       {submitted && (
@@ -126,6 +131,7 @@ export default ({ quiz, setView, setQuiz }) => {
           >
             Next
           </button>
+          {backButton}
         </>
       )}
     </div>
