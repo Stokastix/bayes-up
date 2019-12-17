@@ -16,6 +16,7 @@ export default ({ setView }) => {
       {/* <button onClick={() => setView("editor")}>Create a Quiz</button> */}
       <button onClick={() => setView("quizList")}>Take a Quiz</button>
       <button onClick={() => setView("stats")}>See my Stats</button>
+      <button onClick={() => setView("editor")}>Create a Quiz</button>
       <button onClick={() => setView("settings")}>Settings</button>
     </div>
   );
