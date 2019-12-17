@@ -20,6 +20,15 @@ export default ({ quiz, setView, setQuiz }) => {
     );
   }
 
+  const quitQuiz = () => {
+    setView("home");
+    setQuiz(null);
+    setChoiceList(null);
+    setStep(0);
+    setGuesses(null);
+    setTotalScore(0);
+  };
+
   if (step >= quiz.questions.length) {
     return (
       <div id="quizend" className="rootColumn" style={{ background }}>
@@ -28,14 +37,7 @@ export default ({ quiz, setView, setQuiz }) => {
           You score a total of {totalScore.toFixed(1)} out of{" "}
           {10 * quiz.questions.length} points.
         </h2>
-        <button
-          onClick={() => {
-            setView("home");
-            setQuiz(null);
-          }}
-        >
-          Go Back Home
-        </button>
+        <button onClick={quitQuiz}>Go Back Home</button>
       </div>
     );
   }
@@ -124,14 +126,7 @@ export default ({ quiz, setView, setQuiz }) => {
       ) : (
         <button onClick={handleSubmit}>Submit</button>
       )}
-      <button
-        onClick={() => {
-          setView("home");
-          setQuiz(null);
-        }}
-      >
-        Back Home
-      </button>
+      <button onClick={quitQuiz}>Back Home</button>
     </div>
   );
 };
