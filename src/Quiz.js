@@ -55,8 +55,8 @@ export default ({ quiz, setView, setQuiz }) => {
   };
 
   const totalGuess = guesses.reduce((a, b) => a + b, 0);
-  const [first, ...next] = guesses;
-  const loss = (100 - first) ** 2 + next.reduce((a, b) => a + b ** 2, 0);
+  const [first, ...others] = guesses;
+  const loss = (100 - first) ** 2 + others.reduce((a, b) => a + b ** 2, 0);
   const score = Math.round((10000 - loss) / 100) / 10;
 
   const handleSubmit = () => {
@@ -92,9 +92,14 @@ export default ({ quiz, setView, setQuiz }) => {
       .set(update, { merge: true });
   };
 
-  const backButton = (
-    <button onClick={() => setView("quizList")}>Back to list</button>
-  );
+  const next = () => {
+    setStep(step + 1);
+    setGuesses(null);
+    setBackground(getColor);
+    setChoiceList(null);
+    setSubmitted(false);
+    setTotalScore(totalScore + score);
+  };
 
   return (
     <div id="quiz" className="rootColumn" style={{ background }}>
@@ -109,31 +114,24 @@ export default ({ quiz, setView, setQuiz }) => {
           setGuess={setGuess(i)}
         />
       ))}
-      {!submitted && (
-        <>
-          <h2>Total guess: {totalGuess}%</h2>
-          <button onClick={handleSubmit}>Submit</button>
-          {backButton}
-        </>
+      {submitted ? (
+        <h2>You scored {score.toFixed(1)} points</h2>
+      ) : (
+        <h2>Total guess: {totalGuess}%</h2>
       )}
-      {submitted && (
-        <>
-          <h2>You scored {score.toFixed(1)} points</h2>
-          <button
-            onClick={() => {
-              setStep(step + 1);
-              setGuesses(null);
-              setBackground(getColor);
-              setChoiceList(null);
-              setSubmitted(false);
-              setTotalScore(totalScore + score);
-            }}
-          >
-            Next
-          </button>
-          {backButton}
-        </>
+      {submitted ? (
+        <button onClick={next}>Next</button>
+      ) : (
+        <button onClick={handleSubmit}>Submit</button>
       )}
+      <button
+        onClick={() => {
+          setView("home");
+          setQuiz(null);
+        }}
+      >
+        Back Home
+      </button>
     </div>
   );
 };

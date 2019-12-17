@@ -40,26 +40,13 @@ button {
   flex: 0 0 auto;
   background: none;
 
-  display: inline-block;
-  padding: 0;
   border: 4px solid #000000;
   margin: 4px;
-  box-sizing: border-box;
-  text-decoration: none;
-  font-family: "Roboto", sans-serif;
+  padding: 0;
+
   font-weight: 500;
   color: #000000;
   text-align: center;
-  transition: all 0.2s;
-}
-
-.editor-input  {
-  min-height: 52px;
-  font-size: 150%;
-  width: 500px;
-  max-width: calc(100% - 16px);
-  border: 4px solid #000000;
-  margin: 4px;
 }
 
 button:hover {
@@ -74,6 +61,47 @@ button:active {
 button:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+.editor-input {
+  min-height: 52px;
+  font-size: 150%;
+  width: 500px;
+  max-width: calc(100% - 16px);
+  border: 4px solid #000000;
+  margin: 4px;
+  padding: 0;
+  font-weight: 500;
+  color: #000000;
+  text-align: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.editor-input:hover {
+  color: #ffffff;
+  background-color: #000000;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.question-input {
+  width: 500px;
+  max-width: calc(100% - 16px);
+  border: 4px solid #000000;
+  margin: 4px;
+  padding: 4px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+
+  flex: 0 0 auto;
 }
 
 h1 {
@@ -143,9 +171,11 @@ h2 {
 }
 
 table {
-  width: 496px;
-  max-width: calc(100% - 20px);
+  width: 500px;
+  max-width: calc(100% - 16px);
   margin: 8px 0px;
+  padding: 0px;
+  box-sizing: border-box;
   border: 4px solid black;
   border-collapse: collapse;
 }
