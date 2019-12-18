@@ -3,8 +3,9 @@ import { getColor } from "./utils";
 import { db } from "./";
 import * as firebase from "firebase/app";
 import Choice from "./ChoiceBox";
+import { withRouter } from "react-router-dom";
 
-export default ({ quiz, setView, setQuiz }) => {
+const Quiz = ({ quiz, history, setQuiz }) => {
   const [background, setBackground] = useState(getColor);
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
@@ -20,6 +21,15 @@ export default ({ quiz, setView, setQuiz }) => {
     );
   }
 
+  const quitQuiz = () => {
+    history.push("/home");
+    setQuiz(null);
+    setChoiceList(null);
+    setStep(0);
+    setGuesses(null);
+    setTotalScore(0);
+  };
+
   if (step >= quiz.questions.length) {
     return (
       <div id="quizend" className="rootColumn" style={{ background }}>
@@ -28,12 +38,7 @@ export default ({ quiz, setView, setQuiz }) => {
           You score a total of {totalScore.toFixed(1)} out of{" "}
           {10 * quiz.questions.length} points.
         </h2>
-        <button
-          onClick={() => {
-            setView("home");
-            setQuiz(null);
-          }}
-        >
+        <button className="fullwidth-button" onClick={quitQuiz}>
           Go Back Home
         </button>
       </div>
@@ -55,12 +60,13 @@ export default ({ quiz, setView, setQuiz }) => {
   };
 
   const totalGuess = guesses.reduce((a, b) => a + b, 0);
-  const [first, ...next] = guesses;
-  const loss = (100 - first) ** 2 + next.reduce((a, b) => a + b ** 2, 0);
+  const [first, ...others] = guesses;
+  const loss = (100 - first) ** 2 + others.reduce((a, b) => a + b ** 2, 0);
   const score = Math.round((10000 - loss) / 100) / 10;
 
   const handleSubmit = () => {
     setSubmitted(true);
+    setTotalScore(totalScore + score);
 
     const user = firebase.auth().currentUser;
     if (!user) return;
@@ -83,17 +89,32 @@ export default ({ quiz, setView, setQuiz }) => {
         [`correct_${Math.round(correctGuess)}%`]: 1
       }
     );
-    const update = Object.entries(_update).reduce((acc, [k, v]) => {
-      acc[k] = firebase.firestore.FieldValue.increment(v);
-      return acc;
-    }, {});
+    const update = Object.entries(_update).reduce(
+      (acc, [k, v]) => {
+        acc[k] = firebase.firestore.FieldValue.increment(v);
+        return acc;
+      },
+      { totalScore: firebase.firestore.FieldValue.increment(score) }
+    );
     db.collection("stats")
       .doc(userid)
       .set(update, { merge: true });
   };
 
+  const next = () => {
+    setStep(step + 1);
+    setGuesses(null);
+    setBackground(getColor);
+    setChoiceList(null);
+    setSubmitted(false);
+  };
+
   return (
     <div id="quiz" className="rootColumn" style={{ background }}>
+      <div className="quiz-header">
+        <h1>Current Score: {totalScore.toFixed(1)}</h1>
+        <button onClick={quitQuiz}>Quit</button>
+      </div>
       <h1>{question}</h1>
       {choiceList.map(([c, i]) => (
         <Choice
@@ -105,29 +126,22 @@ export default ({ quiz, setView, setQuiz }) => {
           setGuess={setGuess(i)}
         />
       ))}
-      {!submitted && (
-        <>
-          <h2>Total guess: {totalGuess}%</h2>
-          <button onClick={handleSubmit}>Submit</button>
-        </>
+      {submitted ? (
+        <h2>You scored {score.toFixed(1)} points</h2>
+      ) : (
+        <h2>Total guess: {totalGuess.toFixed(0)}%</h2>
       )}
-      {submitted && (
-        <>
-          <h2>You scored {score.toFixed(1)} points</h2>
-          <button
-            onClick={() => {
-              setStep(step + 1);
-              setGuesses(null);
-              setBackground(getColor);
-              setChoiceList(null);
-              setSubmitted(false);
-              setTotalScore(totalScore + score);
-            }}
-          >
-            Next
-          </button>
-        </>
+      {submitted ? (
+        <button className="fullwidth-button" onClick={next}>
+          Next
+        </button>
+      ) : (
+        <button className="fullwidth-button" onClick={handleSubmit}>
+          Submit
+        </button>
       )}
     </div>
   );
 };
+
+export default withRouter(Quiz);

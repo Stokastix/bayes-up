@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { getColor, httpGet } from "./utils";
+import { withRouter } from "react-router-dom";
 
-export default ({ setView, setQuiz }) => {
+const QuizList = ({ history, setQuiz }) => {
   const [categories, setCategories] = useState([]);
   const [background] = useState(getColor);
 
@@ -12,6 +13,21 @@ export default ({ setView, setQuiz }) => {
       setCategories(trivia_categories);
     }, 1);
   }
+
+  const selectOpenTDB = id => {
+    history.push("/quiz");
+    setTimeout(() => {
+      const quiz = httpGet(
+        `https://opentdb.com/api.php?amount=10&category=${id}&type=multiple&encode=base64`
+      );
+      const questions = JSON.parse(quiz).results.map(x => [
+        atob(x.question),
+        atob(x.correct_answer),
+        ...x.incorrect_answers.map(atob)
+      ]);
+      setQuiz({ questions });
+    }, 1);
+  };
 
   return (
     <div id="quizList" className="rootColumn" style={{ background }}>
@@ -26,21 +42,9 @@ export default ({ setView, setQuiz }) => {
       </h2>
       {categories.map(({ id, name }) => (
         <button
+          className="fullwidth-button"
           key={name}
-          onClick={() => {
-            setView("quiz");
-            setTimeout(() => {
-              const quiz = httpGet(
-                `https://opentdb.com/api.php?amount=10&category=${id}&type=multiple&encode=base64`
-              );
-              const questions = JSON.parse(quiz).results.map(x => [
-                atob(x.question),
-                atob(x.correct_answer),
-                ...x.incorrect_answers.map(atob)
-              ]);
-              setQuiz({ questions });
-            }, 1);
-          }}
+          onClick={() => selectOpenTDB(id)}
         >
           {name}
         </button>
@@ -48,3 +52,5 @@ export default ({ setView, setQuiz }) => {
     </div>
   );
 };
+
+export default withRouter(QuizList);

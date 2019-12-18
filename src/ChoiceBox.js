@@ -2,30 +2,6 @@ import React from "react";
 import Slider from "@material-ui/core/Slider";
 import { withStyles } from "@material-ui/core/styles";
 
-const marks = [
-  0,
-  5,
-  10,
-  15,
-  20,
-  25,
-  30,
-  35,
-  40,
-  45,
-  50,
-  55,
-  60,
-  65,
-  70,
-  75,
-  80,
-  85,
-  90,
-  95,
-  100
-];
-
 const CustomSlider = withStyles({
   root: {
     height: 24,
@@ -67,6 +43,7 @@ export default ({ choice, guess, setGuess, background, submitted }) => {
     <div className="choiceContainer" style={{ background }}>
       <div className="choice">
         <button
+          className="fullwidth-button"
           disabled={guess < 1 || submitted}
           onClick={() => setGuess(guess - 5)}
         >
@@ -74,6 +51,7 @@ export default ({ choice, guess, setGuess, background, submitted }) => {
         </button>
         <span>{choice}</span>
         <button
+          className="fullwidth-button"
           disabled={guess > 99 || submitted}
           onClick={() => setGuess(guess + 5)}
         >

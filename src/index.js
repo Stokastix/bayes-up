@@ -2,8 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
 
-import "firebase/firestore";
 import * as firebase from "firebase/app";
+import "firebase/firestore";
+import "firebase/storage";
 
 import "./index.css";
 import App from "./App";
@@ -23,6 +24,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 export const db = firebase.firestore();
+export const storageRef = firebase.storage().ref();
 
 ReactDOM.render(<App />, document.getElementById("root"));
 

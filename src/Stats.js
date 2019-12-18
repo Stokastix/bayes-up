@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { getColor } from "./utils";
 import * as firebase from "firebase/app";
 import { db } from "./";
+import { withRouter } from "react-router-dom";
 
-export default ({ setView }) => {
+const Stats = ({ history }) => {
   const [background] = useState(getColor);
   const [stats, setStats] = useState(null);
 
@@ -27,18 +28,15 @@ export default ({ setView }) => {
     return (
       <div id="stats" className="rootColumn" style={{ background }}>
         <span>Loading Stats...</span>
-        <button onClick={() => setView("home")}>Back to Home</button>
+        <button
+          className="fullwidth-button"
+          onClick={() => history.push("/home")}
+        >
+          Back to Home
+        </button>
       </div>
     );
   }
-
-  if (stats === {})
-    return (
-      <div id="stats" className="rootColumn" style={{ background }}>
-        <h2>Your stats are empty</h2>
-        <button onClick={() => setView("home")}>Back to Home</button>
-      </div>
-    );
 
   const { groups, current } = new Array(101).fill(0).reduce(
     ({ count, groups, current }, _, target) => {
@@ -48,7 +46,7 @@ export default ({ setView }) => {
 
       if (n === 0) return { count, groups, current };
       current.push(target);
-      if (count + n > 100) {
+      if (count + n > 30) {
         groups.push(current);
         return { count: 0, groups, current: [] };
       } else {
@@ -79,6 +77,8 @@ export default ({ setView }) => {
 
   return (
     <div id="stats" className="rootColumn" style={{ background }}>
+      <h1>Stats</h1>
+      <h2>Lifetime cummulated score: {stats.totalScore}</h2>
       <table>
         <thead>
           <tr>
@@ -103,7 +103,14 @@ export default ({ setView }) => {
           })}
         </tbody>
       </table>
-      <button onClick={() => setView("home")}>Back to Home</button>
+      <button
+        className="fullwidth-button"
+        onClick={() => history.push("/home")}
+      >
+        Back to Home
+      </button>
     </div>
   );
 };
+
+export default withRouter(Stats);
