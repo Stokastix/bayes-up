@@ -186,7 +186,9 @@ const DisplayShare = ({ setView, quizId }) => {
     <div id="editor" className="rootColumn" style={{ background }}>
       <h1>Quiz Created!</h1>
       <h2>Your quiz is now available at the URL:</h2>
-      <a href={URL}>{URL}</a>
+      <a className="share-link" href={URL}>
+        {URL}
+      </a>
       <button className="fullwidth-button" onClick={copyToClipboard}>
         Copy URL
       </button>

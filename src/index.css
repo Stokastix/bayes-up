@@ -226,3 +226,8 @@ th {
 .quiz-header h1 {
   text-align: left;
 }
+
+.share-link {
+  font-size: 150%;
+  margin-bottom: 16px;
+}
