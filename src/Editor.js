@@ -84,7 +84,7 @@ const QuestionEditorBox = ({ question, setQuestion, deleteQuestion }) => {
   );
 };
 
-const OnlineEditor = ({ setEditor, quiz, setQuiz }) => {
+const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
   const [background] = useState(getColor);
 
   const addQuestion = () => {
@@ -113,12 +113,13 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz }) => {
 
   const handleSubmit = () => {
     if (!checkQuiz()) alert("quiz configuration has errors.");
+    setEditor("share");
+
     const { name, questions } = quiz;
     const text = [name, ...questions.map(x => x.join(","))].join("\n");
 
-    const quizID = shortID(12);
     const storageRef = firebase.storage().ref();
-    const ref = storageRef.child(`quizzes/${quizID}.csv`);
+    const ref = storageRef.child(`quizzes/${quizId}.csv`);
     ref.putString(text).then(snapshot => {
       console.log("Uploaded a quiz");
       console.log(snapshot);
@@ -133,7 +134,7 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz }) => {
       .doc(userid)
       .set(
         {
-          [quizID]: name
+          [quizId]: name
         },
         { merge: true }
       );
@@ -168,6 +169,34 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz }) => {
   );
 };
 
+const DisplayShare = ({ setView, quizId }) => {
+  const [background] = useState(getColor);
+
+  const URL = `http://TODO.todo/quiz/${quizId}`;
+
+  const copyToClipboard = () => {
+    const el = document.createElement("textarea");
+    el.value = URL;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
+  };
+  return (
+    <div id="editor" className="rootColumn" style={{ background }}>
+      <h1>Quiz Created!</h1>
+      <h2>Your quiz is now available at the URL:</h2>
+      <a href={URL}>{URL}</a>
+      <button className="fullwidth-button" onClick={copyToClipboard}>
+        Copy URL
+      </button>
+      <button className="fullwidth-button" onClick={() => setView("home")}>
+        Home
+      </button>
+    </div>
+  );
+};
+
 export default ({ setView }) => {
   const [background] = useState(getColor);
   const [editor, setEditor] = useState(null);
@@ -175,6 +204,7 @@ export default ({ setView }) => {
     name: "",
     questions: [["", "", "", "", ""]]
   });
+  const [quizId] = useState(shortID(12));
 
   if (editor === null) {
     return (
@@ -202,6 +232,17 @@ export default ({ setView }) => {
   }
 
   if (editor === "online") {
-    return <OnlineEditor setEditor={setEditor} quiz={quiz} setQuiz={setQuiz} />;
+    return (
+      <OnlineEditor
+        setEditor={setEditor}
+        quiz={quiz}
+        setQuiz={setQuiz}
+        quizId={quizId}
+      />
+    );
+  }
+
+  if (editor === "share") {
+    return <DisplayShare setView={setView} quizId={quizId} />;
   }
 };

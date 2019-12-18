@@ -14,9 +14,15 @@ export default ({ setView, setLoggedIn }) => {
   return (
     <div id="settings" className="rootColumn" style={{ background }}>
       <h1>Your Account</h1>
-      <button onClick={() => setView("myquizzes")}>See My Quizzes</button>
-      <button onClick={() => setView("home")}>Back to Home</button>
-      <button onClick={logout}>Logout</button>
+      <button className="fullwidth-button" onClick={() => setView("myquizzes")}>
+        See My Quizzes
+      </button>
+      <button className="fullwidth-button" onClick={() => setView("home")}>
+        Back to Home
+      </button>
+      <button className="fullwidth-button" onClick={logout}>
+        Logout
+      </button>
     </div>
   );
 };

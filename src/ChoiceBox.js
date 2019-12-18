@@ -2,8 +2,6 @@ import React from "react";
 import Slider from "@material-ui/core/Slider";
 import { withStyles } from "@material-ui/core/styles";
 
-const marks = [25, 50, 75];
-
 const CustomSlider = withStyles({
   root: {
     height: 24,
