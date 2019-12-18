@@ -173,7 +173,7 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
 const DisplayShare = ({ history, quizId }) => {
   const [background] = useState(getColor);
 
-  const URL = `${window.location.href}/q/${quizId}`;
+  const URL = `${window.location.host}/q/${quizId}`;
 
   const copyToClipboard = () => {
     const el = document.createElement("textarea");
