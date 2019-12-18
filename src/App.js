@@ -6,6 +6,7 @@ import Editor from "./Editor";
 import Stats from "./Stats";
 import Settings from "./Settings";
 import SignIn from "./SignIn";
+import MyQuizzes from "./MyQuizzes";
 
 const App = () => {
   const [view, setView] = useState("home");
@@ -27,6 +28,7 @@ const App = () => {
         {view === "settings" && (
           <Settings setView={setView} setLoggedIn={setLoggedIn} />
         )}
+        {view === "myquizzes" && <MyQuizzes setView={setView} />}
       </div>
     );
   } else {
