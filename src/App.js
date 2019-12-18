@@ -6,9 +6,12 @@ import Editor from "./Editor";
 import Stats from "./Stats";
 import Settings from "./Settings";
 import SignIn from "./SignIn";
+import FetchQuiz from "./FetchQuiz";
 
 const App = () => {
-  const [view, setView] = useState("home");
+  const path = window.location.pathname;
+
+  const [view, setView] = useState(path.length > 1 ? "fetchQuiz" : "home");
   const [quiz, setQuiz] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -26,6 +29,9 @@ const App = () => {
         {view === "stats" && <Stats setView={setView} />}
         {view === "settings" && (
           <Settings setView={setView} setLoggedIn={setLoggedIn} />
+        )}
+        {view === "fetchQuiz" && (
+          <FetchQuiz setQuiz={setQuiz} setView={setView} path={path} />
         )}
       </div>
     );
