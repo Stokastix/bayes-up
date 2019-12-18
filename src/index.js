@@ -24,6 +24,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 export const db = firebase.firestore();
+export const storageRef = firebase.storage().ref();
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
@@ -31,5 +32,3 @@ ReactDOM.render(<App />, document.getElementById("root"));
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.register();
-
-export const storageRef = firebase.storage().ref();

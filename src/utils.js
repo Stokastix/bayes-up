@@ -102,6 +102,10 @@ export const quizList = [
 ];
 
 export const shortID = n => {
-  const alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  return new Array(n).fill(0).map(_ => alphabet[Math.floor(Math.random() * alphabet.length)].join("")
-}
+  const alphabet =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  return new Array(n)
+    .fill(0)
+    .map(_ => alphabet[Math.floor(Math.random() * alphabet.length)])
+    .join("");
+};

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import TextField from "@material-ui/core/TextField";
+import * as firebase from "firebase/app";
 
-import { getColor } from "./utils";
+import { getColor, shortID } from "./utils";
 
 const CSVEditor = ({ setEditor, setQuiz }) => {
   const [background] = useState(getColor);
@@ -20,9 +21,9 @@ const CSVEditor = ({ setEditor, setQuiz }) => {
   return (
     <div id="editor" className="rootColumn" style={{ background }}>
       <h2>
-        Choose a CSV file with on each line the question, then the right answer,
-        then one or several wrong answers. All separated by commas and in the
-        specified order
+        Choose a CSV file. The lines should each contains one question, then the
+        right answer, then one or several wrong answers. All separated by
+        commas.
       </h2>
       <label className="editor-input">
         <input type="file" accept=".csv" onChange={handleFile} />
@@ -33,26 +34,50 @@ const CSVEditor = ({ setEditor, setQuiz }) => {
   );
 };
 
-const QuestionEditorBox = ({ question, setQuestion }) => {
+const QuestionEditorBox = ({ question, setQuestion, deleteQuestion }) => {
   const [q, correct, incorrect1, incorrect2, incorrect3] = question;
+
+  const handleUpdate = i => e => {
+    question[i] = e.target.value;
+    setQuestion(question);
+  };
 
   const margin = { margin: "4px" };
   return (
     <div className="question-input">
-      <TextField style={margin} label="Question" value={q} />
-      <TextField style={margin} label="Correct answer" value={correct} />
-      <TextField style={margin} label={"Wrong answer"} value={incorrect1} />
       <TextField
         style={margin}
-        label={"Wrong answer (optional)"}
-        value={incorrect2}
+        label="Question"
+        defaultValue={q}
+        onChange={handleUpdate(0)}
+      />
+      <TextField
+        style={margin}
+        label="Correct answer"
+        defaultValue={correct}
+        onChange={handleUpdate(1)}
+      />
+      <TextField
+        style={margin}
+        label={"Wrong answer"}
+        defaultValue={incorrect1}
+        onChange={handleUpdate(2)}
       />
       <TextField
         style={margin}
         label={"Wrong answer (optional)"}
-        value={incorrect3}
+        defaultValue={incorrect2}
+        onChange={handleUpdate(3)}
       />
-      <button className="question-delete">Delete Question</button>
+      <TextField
+        style={margin}
+        label={"Wrong answer (optional)"}
+        defaultValue={incorrect3}
+        onChange={handleUpdate(4)}
+      />
+      <button className="question-delete" onClick={deleteQuestion}>
+        Delete Question
+      </button>
     </div>
   );
 };
@@ -74,6 +99,44 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz }) => {
     setQuiz({ ...quiz });
   };
 
+  const deleteQuestion = i => () => {
+    const questions = quiz.questions.filter((_, j) => i !== j);
+    setQuiz({ ...quiz, questions });
+  };
+
+  const checkQuiz = () => {
+    // TODO
+    return true;
+  };
+
+  const handleSubmit = () => {
+    if (!checkQuiz()) alert("quiz configuration has errors.");
+    const { name, questions } = quiz;
+    const text = [name, ...questions.map(x => x.join(","))].join("\n");
+
+    const quizID = shortID(12);
+    const storageRef = firebase.storage().ref();
+    const ref = storageRef.child(`quizzes/${quizID}.csv`);
+    ref.putString(text).then(snapshot => {
+      console.log("Uploaded a quiz");
+      console.log(snapshot);
+    });
+
+    const db = firebase.firestore();
+
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    const userid = user.uid;
+    db.collection("quizzes")
+      .doc(userid)
+      .set(
+        {
+          [quizID]: name
+        },
+        { merge: true }
+      );
+  };
+
   return (
     <div id="editor" className="rootColumn" style={{ background }}>
       <h1>Configure your quiz</h1>
@@ -84,13 +147,14 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz }) => {
       />
       {quiz.questions.map((q, i) => (
         <QuestionEditorBox
-          key={i + q[0]}
+          key={quiz.questions.length + "_" + i}
           question={q}
           setQuestion={setQuestion(i)}
+          deleteQuestion={deleteQuestion(i)}
         />
       ))}
       <button onClick={addQuestion}>Add Question</button>
-      <button onClick={() => {}}>Submit Quiz</button>
+      <button onClick={handleSubmit}>Submit Quiz</button>
       <button onClick={() => setEditor(null)}>Go Back</button>
     </div>
   );
