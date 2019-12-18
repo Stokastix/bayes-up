@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import * as firebase from "firebase/app";
 
+import stringify from "csv-stringify";
+
 import { getColor, shortID } from "./utils";
 import { withRouter } from "react-router-dom";
 
@@ -117,17 +119,17 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
     setEditor("share");
 
     const { name, questions } = quiz;
-    const text = [name, ...questions.map(x => x.join(","))].join("\n");
-
-    const storageRef = firebase.storage().ref();
-    const ref = storageRef.child(`quizzes/${quizId}.csv`);
-    ref.putString(text).then(snapshot => {
-      console.log("Uploaded a quiz");
-      console.log(snapshot);
+    stringify([[name || "No Name"], ...questions], (err, output) => {
+      console.log(output);
+      const storageRef = firebase.storage().ref();
+      const ref = storageRef.child(`quizzes/${quizId}.csv`);
+      ref.putString(output).then(snapshot => {
+        console.log("Uploaded a quiz");
+        console.log(snapshot);
+      });
     });
 
     const db = firebase.firestore();
-
     const user = firebase.auth().currentUser;
     if (!user) return;
     const userid = user.uid;
