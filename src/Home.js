@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { getColor } from "./utils";
+import { withRouter } from "react-router-dom";
 
-export default ({ setView }) => {
+const Home = ({ history }) => {
   const [background] = useState(getColor);
   return (
     <div id="home" className="rootColumn" style={{ background }}>
@@ -13,18 +14,32 @@ export default ({ setView }) => {
         same as MCQ except that instead of selecting an answer, you select
         probabilities you assign to each possible choice. Have fun
       </h2>
-      <button className="fullwidth-button" onClick={() => setView("quizList")}>
+      <button
+        className="fullwidth-button"
+        onClick={() => history.push("/quizList")}
+      >
         Take a Quiz
       </button>
-      <button className="fullwidth-button" onClick={() => setView("stats")}>
+      <button
+        className="fullwidth-button"
+        onClick={() => history.push("/stats")}
+      >
         See my Stats
       </button>
-      <button className="fullwidth-button" onClick={() => setView("editor")}>
+      <button
+        className="fullwidth-button"
+        onClick={() => history.push("/editor")}
+      >
         Create a Quiz
       </button>
-      <button className="fullwidth-button" onClick={() => setView("settings")}>
+      <button
+        className="fullwidth-button"
+        onClick={() => history.push("/settings")}
+      >
         My Account
       </button>
     </div>
   );
 };
+
+export default withRouter(Home);

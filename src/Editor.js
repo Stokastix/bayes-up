@@ -3,6 +3,7 @@ import TextField from "@material-ui/core/TextField";
 import * as firebase from "firebase/app";
 
 import { getColor, shortID } from "./utils";
+import { withRouter } from "react-router-dom";
 
 const CSVEditor = ({ setEditor, setQuiz }) => {
   const [background] = useState(getColor);
@@ -169,7 +170,7 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
   );
 };
 
-const DisplayShare = ({ setView, quizId }) => {
+const DisplayShare = ({ history, quizId }) => {
   const [background] = useState(getColor);
 
   const URL = `http://TODO.todo/quiz/${quizId}`;
@@ -192,14 +193,17 @@ const DisplayShare = ({ setView, quizId }) => {
       <button className="fullwidth-button" onClick={copyToClipboard}>
         Copy URL
       </button>
-      <button className="fullwidth-button" onClick={() => setView("home")}>
+      <button
+        className="fullwidth-button"
+        onClick={() => history.push("/home")}
+      >
         Home
       </button>
     </div>
   );
 };
 
-export default ({ setView }) => {
+const Editor = ({ history }) => {
   const [background] = useState(getColor);
   const [editor, setEditor] = useState(null);
   const [quiz, setQuiz] = useState({
@@ -222,7 +226,10 @@ export default ({ setView }) => {
         >
           Create online
         </button>
-        <button className="fullwidth-button" onClick={() => setView("home")}>
+        <button
+          className="fullwidth-button"
+          onClick={() => history.push("/home")}
+        >
           Go Back
         </button>
       </div>
@@ -245,6 +252,8 @@ export default ({ setView }) => {
   }
 
   if (editor === "share") {
-    return <DisplayShare setView={setView} quizId={quizId} />;
+    return <DisplayShare history={history} quizId={quizId} />;
   }
 };
+
+export default withRouter(Editor);

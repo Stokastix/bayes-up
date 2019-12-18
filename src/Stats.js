@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { getColor } from "./utils";
 import * as firebase from "firebase/app";
 import { db } from "./";
+import { withRouter } from "react-router-dom";
 
-export default ({ setView }) => {
+const Stats = ({ history }) => {
   const [background] = useState(getColor);
   const [stats, setStats] = useState(null);
 
@@ -27,7 +28,10 @@ export default ({ setView }) => {
     return (
       <div id="stats" className="rootColumn" style={{ background }}>
         <span>Loading Stats...</span>
-        <button className="fullwidth-button" onClick={() => setView("home")}>
+        <button
+          className="fullwidth-button"
+          onClick={() => history.push("/home")}
+        >
           Back to Home
         </button>
       </div>
@@ -97,9 +101,14 @@ export default ({ setView }) => {
           })}
         </tbody>
       </table>
-      <button className="fullwidth-button" onClick={() => setView("home")}>
+      <button
+        className="fullwidth-button"
+        onClick={() => history.push("/home")}
+      >
         Back to Home
       </button>
     </div>
   );
 };
+
+export default withRouter(Stats);

@@ -3,8 +3,9 @@ import { getColor } from "./utils";
 import { db } from "./";
 import * as firebase from "firebase/app";
 import Choice from "./ChoiceBox";
+import { withRouter } from "react-router-dom";
 
-export default ({ quiz, setView, setQuiz }) => {
+const Quiz = ({ quiz, history, setQuiz }) => {
   const [background, setBackground] = useState(getColor);
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
@@ -21,7 +22,7 @@ export default ({ quiz, setView, setQuiz }) => {
   }
 
   const quitQuiz = () => {
-    setView("home");
+    history.push("/home");
     setQuiz(null);
     setChoiceList(null);
     setStep(0);
@@ -142,3 +143,5 @@ export default ({ quiz, setView, setQuiz }) => {
     </div>
   );
 };
+
+export default withRouter(Quiz);

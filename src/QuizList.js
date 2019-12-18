@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { getColor, httpGet } from "./utils";
+import { withRouter } from "react-router-dom";
 
-export default ({ setView, setQuiz }) => {
+const QuizList = ({ history, setQuiz }) => {
   const [categories, setCategories] = useState([]);
   const [background] = useState(getColor);
 
@@ -14,7 +15,7 @@ export default ({ setView, setQuiz }) => {
   }
 
   const selectOpenTDB = id => {
-    setView("quiz");
+    history.push("/quiz");
     setTimeout(() => {
       const quiz = httpGet(
         `https://opentdb.com/api.php?amount=10&category=${id}&type=multiple&encode=base64`
@@ -51,3 +52,5 @@ export default ({ setView, setQuiz }) => {
     </div>
   );
 };
+
+export default withRouter(QuizList);

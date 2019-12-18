@@ -1,23 +1,27 @@
 import React, { useState } from "react";
 import { getColor } from "./utils";
 import * as firebase from "firebase/app";
+import { withRouter } from "react-router-dom";
 
-export default ({ setView, setLoggedIn }) => {
+const Settings = ({ history, setLoggedIn }) => {
   const [background] = useState(getColor);
 
   const logout = () => {
     firebase.auth().signOut();
-    setView("home");
     setLoggedIn(false);
+    history.push("/");
   };
 
   return (
     <div id="settings" className="rootColumn" style={{ background }}>
       <h1>Your Account</h1>
-      <button className="fullwidth-button" onClick={() => setView("myquizzes")}>
+      <button
+        className="fullwidth-button"
+        onClick={() => history.push("/myquizzes")}
+      >
         See My Quizzes
       </button>
-      <button className="fullwidth-button" onClick={() => setView("home")}>
+      <button className="fullwidth-button" onClick={() => history.push("/")}>
         Back to Home
       </button>
       <button className="fullwidth-button" onClick={logout}>
@@ -26,3 +30,5 @@ export default ({ setView, setLoggedIn }) => {
     </div>
   );
 };
+
+export default withRouter(Settings);

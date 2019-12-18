@@ -4,11 +4,13 @@ import "firebase/firestore";
 import parse from "csv-parse";
 import { getColor } from "./utils";
 import "firebase/storage";
+import { withRouter, useParams } from "react-router-dom";
 
-export default ({ setView, setQuiz, path }) => {
+const FetchQuiz = ({ history, setQuiz }) => {
   const [background] = useState(getColor);
   const [quizStatus, setQuizStatus] = useState("fetch");
   const [dataUrl, setDataUrl] = useState(undefined);
+  const { quizId } = useParams();
 
   function parseCsv(data) {
     const output = [];
@@ -29,7 +31,7 @@ export default ({ setView, setQuiz, path }) => {
   }
 
   function openQuiz() {
-    setView("quiz");
+    history.push("/quiz");
     fetch(dataUrl)
       .then(response => response.text())
       .then(parseCsv);
@@ -38,7 +40,7 @@ export default ({ setView, setQuiz, path }) => {
   function getStorageUrl() {
     const storageRef = firebase.storage().ref();
     storageRef
-      .child("quizzes/" + path + ".csv")
+      .child("quizzes/" + quizId + ".csv")
       .getDownloadURL()
       .then(function(url) {
         setDataUrl(url);
@@ -64,8 +66,10 @@ export default ({ setView, setQuiz, path }) => {
 
   return (
     <div id="fetchQuiz" className="rootColumn" style={{ background }}>
-      <h1>Quiz id: {path}</h1>
+      <h1>Quiz Fetcher</h1>
       {result[quizStatus]}
     </div>
   );
 };
+
+export default withRouter(FetchQuiz);
