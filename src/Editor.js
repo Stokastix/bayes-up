@@ -29,7 +29,9 @@ const CSVEditor = ({ setEditor, setQuiz }) => {
         <input type="file" accept=".csv" onChange={handleFile} />
         <span>Select File</span>
       </label>
-      <button onClick={() => setEditor(null)}>Go Back</button>
+      <button className="fullwidth-button" onClick={() => setEditor(null)}>
+        Go Back
+      </button>
     </div>
   );
 };
@@ -75,7 +77,7 @@ const QuestionEditorBox = ({ question, setQuestion, deleteQuestion }) => {
         defaultValue={incorrect3}
         onChange={handleUpdate(4)}
       />
-      <button className="question-delete" onClick={deleteQuestion}>
+      <button className="fullwidth-button" onClick={deleteQuestion}>
         Delete Question
       </button>
     </div>
@@ -153,9 +155,15 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz }) => {
           deleteQuestion={deleteQuestion(i)}
         />
       ))}
-      <button onClick={addQuestion}>Add Question</button>
-      <button onClick={handleSubmit}>Submit Quiz</button>
-      <button onClick={() => setEditor(null)}>Go Back</button>
+      <button className="fullwidth-button" onClick={addQuestion}>
+        Add Question
+      </button>
+      <button className="fullwidth-button" onClick={handleSubmit}>
+        Submit Quiz
+      </button>
+      <button className="fullwidth-button" onClick={() => setEditor(null)}>
+        Go Back
+      </button>
     </div>
   );
 };
@@ -173,9 +181,18 @@ export default ({ setView }) => {
       <div id="editor" className="rootColumn" style={{ background }}>
         <h1>Create a Quiz</h1>
         <h2>You can create your own quiz and share it.</h2>
-        <button onClick={() => setEditor("csv")}>Create from a CSV file</button>
-        <button onClick={() => setEditor("online")}>Create online</button>
-        <button onClick={() => setView("home")}>Go Back</button>
+        <button className="fullwidth-button" onClick={() => setEditor("csv")}>
+          Create from a CSV file
+        </button>
+        <button
+          className="fullwidth-button"
+          onClick={() => setEditor("online")}
+        >
+          Create online
+        </button>
+        <button className="fullwidth-button" onClick={() => setView("home")}>
+          Go Back
+        </button>
       </div>
     );
   }

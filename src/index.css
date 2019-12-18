@@ -32,7 +32,7 @@ code {
   overflow: auto;
 }
 
-button {
+.fullwidth-button {
   min-height: 52px;
   font-size: 150%;
   width: 500px;
@@ -49,16 +49,16 @@ button {
   text-align: center;
 }
 
-button:hover {
+.fullwidth-button:hover {
   color: #ffffff;
   background-color: #000000;
 }
 
-button:active {
+.fullwidth-button:active {
   background-color: #555555;
 }
 
-button:disabled {
+.fullwidth-button:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
@@ -200,4 +200,29 @@ th {
 .sliderValue {
   flex: 0;
   text-align: center;
+}
+
+.quiz-header {
+  width: 500px;
+  max-width: calc(100% - 16px);
+  margin: 0px;
+  margin-bottom: 12px;
+  padding: 4px;
+  box-sizing: border-box;
+
+  border-bottom: 3px solid black;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.quiz-header button {
+  padding: 8px;
+  font-size: 100%;
+  border: 2px solid black;
+  background: none;
+}
+
+.quiz-header h1 {
+  text-align: left;
 }

@@ -36,14 +36,20 @@ export default ({ setView }) => {
           </h2>
           {Object.entries(quizList).map(([quizId, quizName]) => {
             return (
-              <button key={quizId} onClick={() => {}}>
+              <button
+                className="fullwidth-button"
+                key={quizId}
+                onClick={() => {}}
+              >
                 {quizName}
               </button>
             );
           })}
         </>
       )}
-      <button onClick={() => setView("home")}>Back to Home</button>
+      <button className="fullwidth-button" onClick={() => setView("home")}>
+        Back to Home
+      </button>
     </div>
   );
 };

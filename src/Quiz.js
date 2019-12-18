@@ -37,7 +37,9 @@ export default ({ quiz, setView, setQuiz }) => {
           You score a total of {totalScore.toFixed(1)} out of{" "}
           {10 * quiz.questions.length} points.
         </h2>
-        <button onClick={quitQuiz}>Go Back Home</button>
+        <button className="fullwidth-button" onClick={quitQuiz}>
+          Go Back Home
+        </button>
       </div>
     );
   }
@@ -63,6 +65,7 @@ export default ({ quiz, setView, setQuiz }) => {
 
   const handleSubmit = () => {
     setSubmitted(true);
+    setTotalScore(totalScore + score);
 
     const user = firebase.auth().currentUser;
     if (!user) return;
@@ -85,10 +88,13 @@ export default ({ quiz, setView, setQuiz }) => {
         [`correct_${Math.round(correctGuess)}%`]: 1
       }
     );
-    const update = Object.entries(_update).reduce((acc, [k, v]) => {
-      acc[k] = firebase.firestore.FieldValue.increment(v);
-      return acc;
-    }, {});
+    const update = Object.entries(_update).reduce(
+      (acc, [k, v]) => {
+        acc[k] = firebase.firestore.FieldValue.increment(v);
+        return acc;
+      },
+      { totalScore: firebase.firestore.FieldValue.increment(score) }
+    );
     db.collection("stats")
       .doc(userid)
       .set(update, { merge: true });
@@ -100,11 +106,14 @@ export default ({ quiz, setView, setQuiz }) => {
     setBackground(getColor);
     setChoiceList(null);
     setSubmitted(false);
-    setTotalScore(totalScore + score);
   };
 
   return (
     <div id="quiz" className="rootColumn" style={{ background }}>
+      <div className="quiz-header">
+        <h1>Current Score: {totalScore.toFixed(1)}</h1>
+        <button onClick={quitQuiz}>Quit</button>
+      </div>
       <h1>{question}</h1>
       {choiceList.map(([c, i]) => (
         <Choice
@@ -119,14 +128,17 @@ export default ({ quiz, setView, setQuiz }) => {
       {submitted ? (
         <h2>You scored {score.toFixed(1)} points</h2>
       ) : (
-        <h2>Total guess: {totalGuess}%</h2>
+        <h2>Total guess: {totalGuess.toFixed(0)}%</h2>
       )}
       {submitted ? (
-        <button onClick={next}>Next</button>
+        <button className="fullwidth-button" onClick={next}>
+          Next
+        </button>
       ) : (
-        <button onClick={handleSubmit}>Submit</button>
+        <button className="fullwidth-button" onClick={handleSubmit}>
+          Submit
+        </button>
       )}
-      <button onClick={quitQuiz}>Back Home</button>
     </div>
   );
 };

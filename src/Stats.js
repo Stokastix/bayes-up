@@ -27,18 +27,12 @@ export default ({ setView }) => {
     return (
       <div id="stats" className="rootColumn" style={{ background }}>
         <span>Loading Stats...</span>
-        <button onClick={() => setView("home")}>Back to Home</button>
+        <button className="fullwidth-button" onClick={() => setView("home")}>
+          Back to Home
+        </button>
       </div>
     );
   }
-
-  if (stats === {})
-    return (
-      <div id="stats" className="rootColumn" style={{ background }}>
-        <h2>Your stats are empty</h2>
-        <button onClick={() => setView("home")}>Back to Home</button>
-      </div>
-    );
 
   const { groups, current } = new Array(101).fill(0).reduce(
     ({ count, groups, current }, _, target) => {
@@ -103,7 +97,9 @@ export default ({ setView }) => {
           })}
         </tbody>
       </table>
-      <button onClick={() => setView("home")}>Back to Home</button>
+      <button className="fullwidth-button" onClick={() => setView("home")}>
+        Back to Home
+      </button>
     </div>
   );
 };

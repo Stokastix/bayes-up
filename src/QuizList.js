@@ -13,6 +13,21 @@ export default ({ setView, setQuiz }) => {
     }, 1);
   }
 
+  const selectOpenTDB = id => {
+    setView("quiz");
+    setTimeout(() => {
+      const quiz = httpGet(
+        `https://opentdb.com/api.php?amount=10&category=${id}&type=multiple&encode=base64`
+      );
+      const questions = JSON.parse(quiz).results.map(x => [
+        atob(x.question),
+        atob(x.correct_answer),
+        ...x.incorrect_answers.map(atob)
+      ]);
+      setQuiz({ questions });
+    }, 1);
+  };
+
   return (
     <div id="quizList" className="rootColumn" style={{ background }}>
       <h1>Choose a Quiz</h1>
@@ -26,21 +41,9 @@ export default ({ setView, setQuiz }) => {
       </h2>
       {categories.map(({ id, name }) => (
         <button
+          className="fullwidth-button"
           key={name}
-          onClick={() => {
-            setView("quiz");
-            setTimeout(() => {
-              const quiz = httpGet(
-                `https://opentdb.com/api.php?amount=10&category=${id}&type=multiple&encode=base64`
-              );
-              const questions = JSON.parse(quiz).results.map(x => [
-                atob(x.question),
-                atob(x.correct_answer),
-                ...x.incorrect_answers.map(atob)
-              ]);
-              setQuiz({ questions });
-            }, 1);
-          }}
+          onClick={() => selectOpenTDB(id)}
         >
           {name}
         </button>

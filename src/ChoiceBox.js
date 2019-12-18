@@ -45,6 +45,7 @@ export default ({ choice, guess, setGuess, background, submitted }) => {
     <div className="choiceContainer" style={{ background }}>
       <div className="choice">
         <button
+          className="fullwidth-button"
           disabled={guess < 1 || submitted}
           onClick={() => setGuess(guess - 5)}
         >
@@ -52,6 +53,7 @@ export default ({ choice, guess, setGuess, background, submitted }) => {
         </button>
         <span>{choice}</span>
         <button
+          className="fullwidth-button"
           disabled={guess > 99 || submitted}
           onClick={() => setGuess(guess + 5)}
         >

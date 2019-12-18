@@ -13,11 +13,18 @@ export default ({ setView }) => {
         same as MCQ except that instead of selecting an answer, you select
         probabilities you assign to each possible choice. Have fun
       </h2>
-      {/* <button onClick={() => setView("editor")}>Create a Quiz</button> */}
-      <button onClick={() => setView("quizList")}>Take a Quiz</button>
-      <button onClick={() => setView("stats")}>See my Stats</button>
-      <button onClick={() => setView("editor")}>Create a Quiz</button>
-      <button onClick={() => setView("settings")}>My Account</button>
+      <button className="fullwidth-button" onClick={() => setView("quizList")}>
+        Take a Quiz
+      </button>
+      <button className="fullwidth-button" onClick={() => setView("stats")}>
+        See my Stats
+      </button>
+      <button className="fullwidth-button" onClick={() => setView("editor")}>
+        Create a Quiz
+      </button>
+      <button className="fullwidth-button" onClick={() => setView("settings")}>
+        My Account
+      </button>
     </div>
   );
 };

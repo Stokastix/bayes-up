@@ -56,7 +56,7 @@ export default ({ setView, setQuiz, path }) => {
     fetch: <p>fetching url...</p>,
     success: [
       <p key="9">[put some info here... (name, date, author)]</p>,
-      <button key="1" onClick={() => openQuiz()}>
+      <button className="fullwidth-button" key="1" onClick={() => openQuiz()}>
         Open Quiz
       </button>
     ]
