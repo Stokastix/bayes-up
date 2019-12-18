@@ -42,7 +42,7 @@ export default ({ setView }) => {
 
       if (n === 0) return { count, groups, current };
       current.push(target);
-      if (count + n > 100) {
+      if (count + n > 30) {
         groups.push(current);
         return { count: 0, groups, current: [] };
       } else {
@@ -73,6 +73,8 @@ export default ({ setView }) => {
 
   return (
     <div id="stats" className="rootColumn" style={{ background }}>
+      <h1>Stats</h1>
+      <h2>Lifetime cummulated score: {stats.totalScore}</h2>
       <table>
         <thead>
           <tr>

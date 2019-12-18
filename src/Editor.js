@@ -172,7 +172,7 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
 const DisplayShare = ({ setView, quizId }) => {
   const [background] = useState(getColor);
 
-  const URL = `http://TODO.todo/quiz/${quizId}`;
+  const URL = `${window.location.href}/q/${quizId}`;
 
   const copyToClipboard = () => {
     const el = document.createElement("textarea");
