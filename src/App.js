@@ -7,6 +7,7 @@ import Stats from "./Stats";
 import Settings from "./Settings";
 import SignIn from "./SignIn";
 import FetchQuiz from "./FetchQuiz";
+import MyQuizzes from "./MyQuizzes";
 
 const App = () => {
   const path = window.location.pathname;
@@ -33,6 +34,7 @@ const App = () => {
         {view === "fetchQuiz" && (
           <FetchQuiz setQuiz={setQuiz} setView={setView} path={path} />
         )}
+        {view === "myquizzes" && <MyQuizzes setView={setView} />}
       </div>
     );
   } else {

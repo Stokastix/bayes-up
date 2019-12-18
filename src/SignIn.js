@@ -33,7 +33,6 @@ class SignIn extends React.Component {
     this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
       this.setState({ isSignedIn: !!user });
       this.props.setLoggedIn(!!user);
-      console.log(user);
     });
   }
 
