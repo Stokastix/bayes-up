@@ -17,6 +17,7 @@ const FetchQuiz = ({ history, setQuiz }) => {
     parse(data, {
       trim: true,
       skip_empty_lines: true,
+      relax_column_count: true,
       from_line: 2
     })
       .on("readable", function() {

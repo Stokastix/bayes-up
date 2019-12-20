@@ -189,7 +189,7 @@ const DisplayShare = ({ history, quizId }) => {
     <div id="editor" className="rootColumn" style={{ background }}>
       <h1>Quiz Created!</h1>
       <h2>Your quiz is now available at the URL:</h2>
-      <a className="share-link" href={URL}>
+      <a className="share-link" href={`/q/${quizId}`}>
         {URL}
       </a>
       <button className="fullwidth-button" onClick={copyToClipboard}>
