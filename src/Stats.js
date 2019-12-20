@@ -78,7 +78,7 @@ const Stats = ({ history }) => {
   return (
     <div id="stats" className="rootColumn" style={{ background }}>
       <h1>Stats</h1>
-      <h2>Lifetime cummulated score: {stats.totalScore}</h2>
+      <h2>Lifetime cummulated score: {stats.totalScore.toFixed(1)}</h2>
       <table>
         <thead>
           <tr>
