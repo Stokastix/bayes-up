@@ -15,7 +15,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
 
   if (!quiz) {
     return (
-      <div id="quizend" className="rootColumn" style={{ background }}>
+      <div className="rootColumn" style={{ background }}>
         <p>Loading quiz</p>
       </div>
     );
@@ -32,7 +32,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
 
   if (step >= quiz.questions.length) {
     return (
-      <div id="quizend" className="rootColumn" style={{ background }}>
+      <div className="rootColumn" style={{ background }}>
         <h1>Congratulations !</h1>
         <h2>
           You score a total of {totalScore.toFixed(1)} out of{" "}
@@ -45,7 +45,8 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     );
   }
 
-  const [question, ...choices] = quiz.questions[step];
+  const { questions } = quiz;
+  const [question, ...choices] = questions[step];
   if (guesses === null) {
     setGuesses(choices.map(_ => 0));
     setChoiceList(
@@ -110,10 +111,20 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   };
 
   return (
-    <div id="quiz" className="rootColumn" style={{ background }}>
+    <div className="rootColumn" style={{ background }}>
       <div className="quiz-header">
         <h1>Current Score: {totalScore.toFixed(1)}</h1>
         <button onClick={quitQuiz}>Quit</button>
+      </div>
+      <div className="quiz-progress">
+        <div
+          style={{
+            width: `${((100 * step) / questions.length).toFixed(0)}%`
+          }}
+        />
+        <span>
+          Question {step} / {questions.length}
+        </span>
       </div>
       <h1>{question}</h1>
       {choiceList.map(([c, i]) => (
