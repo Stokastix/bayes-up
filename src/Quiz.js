@@ -9,17 +9,10 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   const [background, setBackground] = useState(getColor);
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
-  const [guesses, setGuesses] = useState(null);
+  const [guesses, setGuesses] = useState({});
+  const [times, setTimes] = useState([]);
   const [choiceList, setChoiceList] = useState(null);
   const [totalScore, setTotalScore] = useState(0);
-
-  if (!quiz) {
-    return (
-      <div id="quizend" className="rootColumn" style={{ background }}>
-        <p>Loading quiz</p>
-      </div>
-    );
-  }
 
   const quitQuiz = () => {
     history.push("/home");
@@ -30,24 +23,49 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     setTotalScore(0);
   };
 
-  if (step >= quiz.questions.length) {
+  if (!quiz) {
+    return (
+      <div id="quizend" className="rootColumn" style={{ background }}>
+        <p>Loading quiz...</p>
+        <button className="fullwidth-button" onClick={quitQuiz}>
+          Home
+        </button>
+      </div>
+    );
+  }
+
+  const { questions, name } = quiz;
+
+  const next = () => {
+    setStep(step + 1);
+    setBackground(getColor);
+    setChoiceList(null);
+    setSubmitted(false);
+
+    if (step === questions.length - 1) {
+      saveStats();
+    }
+  };
+
+  if (step >= questions.length) {
     return (
       <div id="quizend" className="rootColumn" style={{ background }}>
         <h1>Congratulations !</h1>
         <h2>
           You score a total of {totalScore.toFixed(1)} out of{" "}
-          {10 * quiz.questions.length} points.
+          {10 * questions.length} points.
         </h2>
         <button className="fullwidth-button" onClick={quitQuiz}>
-          Go Back Home
+          Home
         </button>
       </div>
     );
   }
 
   const [question, ...choices] = quiz.questions[step];
-  if (guesses === null) {
-    setGuesses(choices.map(_ => 0));
+  if (!guesses[step]) {
+    guesses[step] = choices.map(_ => 0);
+    setGuesses({ ...guesses });
     setChoiceList(
       choices.map((c, i) => [c, i]).sort(() => 0.5 - Math.random())
     );
@@ -55,30 +73,30 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   }
 
   const setGuess = i => x => {
-    guesses[i] = x;
-    setGuesses([...guesses]);
+    guesses[step][i] = x;
+    setGuesses({ ...guesses });
   };
 
-  const totalGuess = guesses.reduce((a, b) => a + b, 0);
-  const [first, ...others] = guesses;
+  const totalGuess = guesses[step].reduce((a, b) => a + b, 0);
+
+  const [first, ...others] = guesses[step];
   const loss = (100 - first) ** 2 + others.reduce((a, b) => a + b ** 2, 0);
   const score = Math.round((10000 - loss) / 100) / 10;
 
-  const handleSubmit = () => {
-    setSubmitted(true);
-    setTotalScore(totalScore + score);
-
+  const saveStats = () => {
     const user = firebase.auth().currentUser;
     if (!user) return;
     const userid = user.uid;
-
     db.collection("events").add({
+      quizId: "todo",
+      quizName: name,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       guesses,
+      times,
       userid
     });
 
-    const [correctGuess, ...incorrectGuesses] = guesses;
+    const [correctGuess, ...incorrectGuesses] = guesses[step];
     const _update = incorrectGuesses.reduce(
       (acc, val) => {
         const key = `incorrect_${Math.round(val)}%`;
@@ -94,19 +112,20 @@ const Quiz = ({ quiz, history, setQuiz }) => {
         acc[k] = firebase.firestore.FieldValue.increment(v);
         return acc;
       },
-      { totalScore: firebase.firestore.FieldValue.increment(score) }
+      { totalScore: firebase.firestore.FieldValue.increment(totalScore) }
     );
     db.collection("stats")
       .doc(userid)
       .set(update, { merge: true });
   };
 
-  const next = () => {
-    setStep(step + 1);
-    setGuesses(null);
-    setBackground(getColor);
-    setChoiceList(null);
-    setSubmitted(false);
+  const handleSubmit = () => {
+    setSubmitted(true);
+    setTotalScore(totalScore + score);
+
+    // TODO count time
+    const answerTime = 42;
+    setTimes([...times, answerTime]);
   };
 
   return (
@@ -122,7 +141,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
           choice={c}
           background={submitted && i === 0 ? "green" : "#bbbbbb"}
           submitted={submitted}
-          guess={guesses[i]}
+          guess={guesses[step][i]}
           setGuess={setGuess(i)}
         />
       ))}
