@@ -206,11 +206,8 @@ th {
   width: 500px;
   max-width: calc(100% - 16px);
   margin: 0px;
-  margin-bottom: 12px;
   padding: 4px;
   box-sizing: border-box;
-
-  border-bottom: 3px solid black;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -221,6 +218,30 @@ th {
   font-size: 100%;
   border: 2px solid black;
   background: none;
+}
+
+.quiz-progress {
+  position: relative;
+  width: 500px;
+  max-width: calc(100% - 16px);
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  border: 2px solid #00000066;
+  height: 32px;
+  flex: 0 0 auto;
+}
+
+.quiz-progress span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.quiz-progress div {
+  background-color: #00000066;
+  height: 100%;
 }
 
 .quiz-header h1 {
