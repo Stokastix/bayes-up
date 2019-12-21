@@ -9,17 +9,10 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   const [background, setBackground] = useState(getColor);
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
-  const [guesses, setGuesses] = useState(null);
+  const [guesses, setGuesses] = useState({});
+  const [times, setTimes] = useState([]);
   const [choiceList, setChoiceList] = useState(null);
   const [totalScore, setTotalScore] = useState(0);
-
-  if (!quiz) {
-    return (
-      <div className="rootColumn" style={{ background }}>
-        <p>Loading quiz</p>
-      </div>
-    );
-  }
 
   const quitQuiz = () => {
     history.push("/home");
@@ -30,25 +23,43 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     setTotalScore(0);
   };
 
-  if (step >= quiz.questions.length) {
+  if (!quiz || step >= quiz.questions.length) {
     return (
       <div className="rootColumn" style={{ background }}>
-        <h1>Congratulations !</h1>
-        <h2>
-          You score a total of {totalScore.toFixed(1)} out of{" "}
-          {10 * quiz.questions.length} points.
-        </h2>
+        {!quiz && <p>Loading quiz...</p>}
+        {!!quiz && (
+          <>
+            <h1>Congratulations !</h1>
+            <h2>
+              You score a total of {totalScore.toFixed(1)} out of{" "}
+              {10 * quiz.questions.length} points.
+            </h2>
+          </>
+        )}
         <button className="fullwidth-button" onClick={quitQuiz}>
-          Go Back Home
+          Home
         </button>
       </div>
     );
   }
 
-  const { questions } = quiz;
+  const { questions, name } = quiz;
+
+  const next = () => {
+    setStep(step + 1);
+    setBackground(getColor);
+    setChoiceList(null);
+    setSubmitted(false);
+    if (step === questions.length - 1) {
+      saveEvent();
+      saveStats();
+    }
+  };
+
   const [question, ...choices] = questions[step];
-  if (guesses === null) {
-    setGuesses(choices.map(_ => 0));
+  if (!guesses[step]) {
+    guesses[step] = choices.map(_ => 0);
+    setGuesses({ ...guesses });
     setChoiceList(
       choices.map((c, i) => [c, i]).sort(() => 0.5 - Math.random())
     );
@@ -56,65 +67,69 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   }
 
   const setGuess = i => x => {
-    guesses[i] = x;
-    setGuesses([...guesses]);
+    guesses[step][i] = x;
+    setGuesses({ ...guesses });
   };
 
-  const totalGuess = guesses.reduce((a, b) => a + b, 0);
-  const [first, ...others] = guesses;
+  const totalGuess = guesses[step].reduce((a, b) => a + b, 0);
+  const [first, ...others] = guesses[step];
   const loss = (100 - first) ** 2 + others.reduce((a, b) => a + b ** 2, 0);
   const score = Math.round((10000 - loss) / 100) / 10;
 
-  const handleSubmit = () => {
-    setSubmitted(true);
-    setTotalScore(totalScore + score);
+  const saveEvent = () => {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    const userid = user.uid;
+    db.collection("events").add({
+      quizId: "missing id",
+      quizName: name || "missing name",
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      guesses,
+      times,
+      userid
+    });
+  };
 
+  const saveStats = () => {
     const user = firebase.auth().currentUser;
     if (!user) return;
     const userid = user.uid;
 
-    db.collection("events").add({
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      guesses,
-      userid
-    });
-
-    const [correctGuess, ...incorrectGuesses] = guesses;
-    const _update = incorrectGuesses.reduce(
-      (acc, val) => {
+    const _update = {};
+    Object.values(guesses).forEach(g => {
+      const [correctGuess, ...incorrectGuesses] = g;
+      const correctKey = `correct_${Math.round(correctGuess)}%`;
+      _update[correctKey] = (_update[correctKey] || 0) + 1;
+      incorrectGuesses.forEach(val => {
         const key = `incorrect_${Math.round(val)}%`;
-        acc[key] = acc[key] ? acc[key] + 1 : 1;
-        return acc;
-      },
-      {
-        [`correct_${Math.round(correctGuess)}%`]: 1
-      }
-    );
+        _update[key] = (_update[key] || 0) + 1;
+      });
+    });
     const update = Object.entries(_update).reduce(
       (acc, [k, v]) => {
         acc[k] = firebase.firestore.FieldValue.increment(v);
         return acc;
       },
-      { totalScore: firebase.firestore.FieldValue.increment(score) }
+      { totalScore: firebase.firestore.FieldValue.increment(totalScore) }
     );
     db.collection("stats")
       .doc(userid)
       .set(update, { merge: true });
   };
 
-  const next = () => {
-    setStep(step + 1);
-    setGuesses(null);
-    setBackground(getColor);
-    setChoiceList(null);
-    setSubmitted(false);
+  const handleSubmit = () => {
+    setSubmitted(true);
+    setTotalScore(totalScore + score);
+    // TODO count time
+    const answerTime = 42;
+    setTimes([...times, answerTime]);
   };
 
   return (
     <div className="rootColumn" style={{ background }}>
       <div className="quiz-header">
         <h1>Current Score: {totalScore.toFixed(1)}</h1>
-        <button onClick={quitQuiz}>Quit</button>
+        <button onClick={() => saveEvent() || quitQuiz()}>Quit</button>
       </div>
       <div className="quiz-progress">
         <div
@@ -133,7 +148,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
           choice={c}
           background={submitted && i === 0 ? "green" : "#bbbbbb"}
           submitted={submitted}
-          guess={guesses[i]}
+          guess={guesses[step][i]}
           setGuess={setGuess(i)}
         />
       ))}
