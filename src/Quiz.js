@@ -15,6 +15,8 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   const [totalScore, setTotalScore] = useState(0);
 
   const quitQuiz = () => {
+    saveEvent();
+
     history.push("/home");
     setQuiz(null);
     setChoiceList(null);
@@ -43,6 +45,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     setSubmitted(false);
 
     if (step === questions.length - 1) {
+      saveEvent();
       saveStats();
     }
   };
@@ -83,7 +86,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   const loss = (100 - first) ** 2 + others.reduce((a, b) => a + b ** 2, 0);
   const score = Math.round((10000 - loss) / 100) / 10;
 
-  const saveStats = () => {
+  const saveEvent = () => {
     const user = firebase.auth().currentUser;
     if (!user) return;
     const userid = user.uid;
@@ -95,6 +98,12 @@ const Quiz = ({ quiz, history, setQuiz }) => {
       times,
       userid
     });
+  };
+
+  const saveStats = () => {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+    const userid = user.uid;
 
     const _update = {};
     Object.values(guesses).forEach(g => {
