@@ -15,8 +15,6 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   const [totalScore, setTotalScore] = useState(0);
 
   const quitQuiz = () => {
-    saveEvent();
-
     history.push("/home");
     setQuiz(null);
     setChoiceList(null);
@@ -25,10 +23,19 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     setTotalScore(0);
   };
 
-  if (!quiz) {
+  if (!quiz || step >= quiz.questions.length) {
     return (
       <div className="rootColumn" style={{ background }}>
-        <p>Loading quiz...</p>
+        {!quiz && <p>Loading quiz...</p>}
+        {!!quiz && (
+          <>
+            <h1>Congratulations !</h1>
+            <h2>
+              You score a total of {totalScore.toFixed(1)} out of{" "}
+              {10 * quiz.questions.length} points.
+            </h2>
+          </>
+        )}
         <button className="fullwidth-button" onClick={quitQuiz}>
           Home
         </button>
@@ -43,27 +50,11 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     setBackground(getColor);
     setChoiceList(null);
     setSubmitted(false);
-
     if (step === questions.length - 1) {
       saveEvent();
       saveStats();
     }
   };
-
-  if (step >= questions.length) {
-    return (
-      <div className="rootColumn" style={{ background }}>
-        <h1>Congratulations !</h1>
-        <h2>
-          You score a total of {totalScore.toFixed(1)} out of{" "}
-          {10 * questions.length} points.
-        </h2>
-        <button className="fullwidth-button" onClick={quitQuiz}>
-          Home
-        </button>
-      </div>
-    );
-  }
 
   const [question, ...choices] = questions[step];
   if (!guesses[step]) {
@@ -81,7 +72,6 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   };
 
   const totalGuess = guesses[step].reduce((a, b) => a + b, 0);
-
   const [first, ...others] = guesses[step];
   const loss = (100 - first) ** 2 + others.reduce((a, b) => a + b ** 2, 0);
   const score = Math.round((10000 - loss) / 100) / 10;
@@ -130,7 +120,6 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   const handleSubmit = () => {
     setSubmitted(true);
     setTotalScore(totalScore + score);
-
     // TODO count time
     const answerTime = 42;
     setTimes([...times, answerTime]);
@@ -140,7 +129,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     <div className="rootColumn" style={{ background }}>
       <div className="quiz-header">
         <h1>Current Score: {totalScore.toFixed(1)}</h1>
-        <button onClick={quitQuiz}>Quit</button>
+        <button onClick={() => saveEvent() || quitQuiz()}>Quit</button>
       </div>
       <div className="quiz-progress">
         <div
