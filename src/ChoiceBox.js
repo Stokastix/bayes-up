@@ -21,6 +21,7 @@ const CustomSlider = withStyles({
       boxShadow: "inherit"
     }
   },
+  active: {},
   track: {
     height: 24,
     borderRadius: 2,

@@ -62,7 +62,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     );
   }
 
-  const [question, ...choices] = quiz.questions[step];
+  const [question, ...choices] = questions[step];
   if (!guesses[step]) {
     guesses[step] = choices.map(_ => 0);
     setGuesses({ ...guesses });
@@ -88,25 +88,24 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     if (!user) return;
     const userid = user.uid;
     db.collection("events").add({
-      quizId: "todo",
-      quizName: name,
+      quizId: "missing id",
+      quizName: name || "missing name",
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       guesses,
       times,
       userid
     });
 
-    const [correctGuess, ...incorrectGuesses] = guesses[step];
-    const _update = incorrectGuesses.reduce(
-      (acc, val) => {
+    const _update = {};
+    Object.values(guesses).forEach(g => {
+      const [correctGuess, ...incorrectGuesses] = g;
+      const correctKey = `correct_${Math.round(correctGuess)}%`;
+      _update[correctKey] = (_update[correctKey] || 0) + 1;
+      incorrectGuesses.forEach(val => {
         const key = `incorrect_${Math.round(val)}%`;
-        acc[key] = acc[key] ? acc[key] + 1 : 1;
-        return acc;
-      },
-      {
-        [`correct_${Math.round(correctGuess)}%`]: 1
-      }
-    );
+        _update[key] = (_update[key] || 0) + 1;
+      });
+    });
     const update = Object.entries(_update).reduce(
       (acc, [k, v]) => {
         acc[k] = firebase.firestore.FieldValue.increment(v);
