@@ -56,7 +56,8 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     }
   };
 
-  const [question, ...choices] = questions[step];
+  const [question, ..._choices] = questions[step];
+  const choices = _choices.filter(x => !!x);
   if (!guesses[step]) {
     guesses[step] = choices.map(_ => 0);
     setGuesses({ ...guesses });

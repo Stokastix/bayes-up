@@ -89,6 +89,7 @@ const QuestionEditorBox = ({ question, setQuestion, deleteQuestion }) => {
 
 const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
   const [background] = useState(getColor);
+  const [errors, setErrors] = useState([]);
 
   const addQuestion = () => {
     const { name, questions } = quiz;
@@ -110,23 +111,34 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
   };
 
   const checkQuiz = () => {
-    // TODO
-    return true;
+    const errorList = [];
+
+    const { name, questions } = quiz;
+
+    if (!name) errorList.push("The name of the quiz is missing.");
+    if (questions.length === 0)
+      errorList.push("The quiz should have at least one question.");
+    questions.forEach(([q, a, b], i) => {
+      if (!q) errorList.push(`The question of question ${i + 1} is missing.`);
+      if (!a)
+        errorList.push(`The correct answer of question ${i + 1} is missing.`);
+      if (!b)
+        errorList.push(`The incorrect answer of question ${i + 1} is missing.`);
+    });
+    setErrors(errorList);
+    return errorList.length === 0;
   };
 
   const handleSubmit = () => {
-    if (!checkQuiz()) alert("quiz configuration has errors.");
+    if (!checkQuiz()) {
+      return;
+    }
     setEditor("share");
-
     const { name, questions } = quiz;
     stringify([[name || "No Name"], ...questions], (err, output) => {
-      console.log(output);
       const storageRef = firebase.storage().ref();
       const ref = storageRef.child(`quizzes/${quizId}.csv`);
-      ref.putString(output).then(snapshot => {
-        console.log("Uploaded a quiz");
-        console.log(snapshot);
-      });
+      ref.putString(output);
     });
 
     const db = firebase.firestore();
@@ -162,6 +174,9 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
       <button className="fullwidth-button" onClick={addQuestion}>
         Add Question
       </button>
+      {errors.map(e => (
+        <span key={e}>ERROR: {e}</span>
+      ))}
       <button className="fullwidth-button" onClick={handleSubmit}>
         Submit Quiz
       </button>
