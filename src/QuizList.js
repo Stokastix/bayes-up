@@ -14,7 +14,7 @@ const QuizList = ({ history, setQuiz }) => {
     }, 1);
   }
 
-  const selectOpenTDB = id => {
+  const selectOpenTDB = (id, name) => {
     history.push("/quiz");
     setTimeout(() => {
       const quiz = httpGet(
@@ -25,7 +25,7 @@ const QuizList = ({ history, setQuiz }) => {
         atob(x.correct_answer),
         ...x.incorrect_answers.map(atob)
       ]);
-      setQuiz({ questions });
+      setQuiz({ quizId: `opentbd_${id}`, name, questions });
     }, 1);
   };
 
@@ -44,7 +44,7 @@ const QuizList = ({ history, setQuiz }) => {
         <button
           className="fullwidth-button"
           key={name}
-          onClick={() => selectOpenTDB(id)}
+          onClick={() => selectOpenTDB(id, name)}
         >
           {name}
         </button>
