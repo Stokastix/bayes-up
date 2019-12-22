@@ -13,6 +13,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   const [times, setTimes] = useState([]);
   const [choiceList, setChoiceList] = useState(null);
   const [totalScore, setTotalScore] = useState(0);
+  const [startTime, setStartTime] = useState(null);
 
   const quitQuiz = () => {
     history.push("/home");
@@ -43,9 +44,14 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     );
   }
 
-  const { questions, name } = quiz;
+  if (!startTime) {
+    setStartTime(new Date());
+  }
+
+  const { questions, name, quizId } = quiz;
 
   const next = () => {
+    setStartTime(new Date());
     setStep(step + 1);
     setBackground(getColor);
     setChoiceList(null);
@@ -82,7 +88,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     if (!user) return;
     const userid = user.uid;
     db.collection("events").add({
-      quizId: "missing id",
+      quizId: quizId || "missing id",
       quizName: name || "missing name",
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       guesses,
@@ -122,7 +128,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     setSubmitted(true);
     setTotalScore(totalScore + score);
     // TODO count time
-    const answerTime = 42;
+    const answerTime = Number(new Date() - startTime);
     setTimes([...times, answerTime]);
   };
 
