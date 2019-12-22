@@ -6,14 +6,13 @@ const Home = ({ history }) => {
   const [background] = useState(getColor);
   return (
     <div id="home" className="rootColumn" style={{ background }}>
-      <h1>Bayesian Quiz</h1>
-      <h1>[This is a Work in Progress]</h1>
-      <h1>[Expect to see features break, disappear, or change quickly]</h1>
-      <h2>
-        This app lets you answer Bayesian Multiple Choice Quiz. They are the
-        same as MCQ except that instead of selecting an answer, you select
-        probabilities you assign to each possible choice. Have fun
-      </h2>
+      <h1>Bayes-Up!</h1>
+      <h1>--- ! ! ! ---</h1>
+      <h1>
+        Development is in Progress. Some feature could have bugs and not work
+        for you. We are sorry for any incovenience you may encounter.
+      </h1>
+      <h1>--- ! ! ! ---</h1>
       <button
         className="fullwidth-button"
         onClick={() => history.push("/quizList")}

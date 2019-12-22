@@ -43,13 +43,26 @@ class SignIn extends React.Component {
   render() {
     return (
       <div className="rootColumn" style={{ background: "#666" }}>
-        <h1>Bayes Up</h1>
+        <h1>Bayes-Up!</h1>
         {this.state.isSignedIn === false ? (
-          <StyledFirebaseAuth
-            uiConfig={this.uiConfig}
-            firebaseAuth={firebase.auth()}
-            style={{ backgroundColor: "blue" }}
-          />
+          <>
+            <h2>
+              This app lets you create, answer and share Bayesian Multiple
+              Choice Quiz. They are the same as MCQ except that instead of
+              selecting one answer, you must select probabilities to each
+              possible choice. Have fun!
+            </h2>
+            <h2>
+              This app collects data that could maybe be used for research on
+              calibration of probability judgments and education. Login as a
+              guest to stay fully anonymous.
+            </h2>
+            <StyledFirebaseAuth
+              uiConfig={this.uiConfig}
+              firebaseAuth={firebase.auth()}
+              style={{ backgroundColor: "blue" }}
+            />
+          </>
         ) : (
           <CircularProgress />
         )}
