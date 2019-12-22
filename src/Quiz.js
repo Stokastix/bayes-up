@@ -135,11 +135,11 @@ const Quiz = ({ quiz, history, setQuiz }) => {
       <div className="quiz-progress">
         <div
           style={{
-            width: `${((100 * step) / questions.length).toFixed(0)}%`
+            width: `${((100 * (step + 1)) / questions.length).toFixed(0)}%`
           }}
         />
         <span>
-          Question {step} / {questions.length}
+          Question {step + 1} / {questions.length}
         </span>
       </div>
       <h1>{question}</h1>
