@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import * as firebase from "firebase/app";
 
+import parse from "csv-parse";
 import stringify from "csv-stringify";
 
 import { getColor, shortID } from "./utils";
@@ -9,14 +10,30 @@ import { withRouter } from "react-router-dom";
 
 const CSVEditor = ({ setEditor, setQuiz }) => {
   const [background] = useState(getColor);
+
   const handleFile = e => {
     const reader = new FileReader();
     const name = e.target.value.split(/(\\|\/)/g).pop();
     reader.onload = function() {
-      const text = reader.result;
-      const questions = text.split("\n").map(x => x.split(","));
-      setQuiz({ name, questions });
-      setEditor("online");
+      const data = reader.result;
+      const output = [];
+      const options = {
+        trim: true,
+        skip_empty_lines: true,
+        relax_column_count: true
+      };
+
+      parse(data, options)
+        .on("readable", function() {
+          let record;
+          while ((record = this.read())) {
+            output.push(record);
+          }
+        })
+        .on("end", function() {
+          setEditor("online");
+          setQuiz({ name, questions: output });
+        });
     };
     reader.readAsText(e.target.files[0]);
   };
