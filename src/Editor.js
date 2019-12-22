@@ -112,9 +112,7 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
 
   const checkQuiz = () => {
     const errorList = [];
-
     const { name, questions } = quiz;
-
     if (!name) errorList.push("The name of the quiz is missing.");
     if (questions.length === 0)
       errorList.push("The quiz should have at least one question.");
@@ -130,21 +128,24 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
   };
 
   const handleSubmit = () => {
-    if (!checkQuiz()) {
-      return;
-    }
-    setEditor("share");
-    const { name, questions } = quiz;
-    stringify([[name || "No Name"], ...questions], (err, output) => {
-      const storageRef = firebase.storage().ref();
-      const ref = storageRef.child(`quizzes/${quizId}.csv`);
-      ref.putString(output);
-    });
+    if (!checkQuiz()) return;
 
     const db = firebase.firestore();
     const user = firebase.auth().currentUser;
     if (!user) return;
     const userid = user.uid;
+    const username = user.displayName || "Guest User";
+
+    setEditor("share");
+
+    const { name, questions } = quiz;
+    stringify(questions, (err, output) => {
+      const storageRef = firebase.storage().ref();
+      const ref = storageRef.child(`quizzes/${quizId}.csv`);
+      const blob = new Blob([output], { type: "text/plain" });
+      ref.put(blob, { customMetadata: { userid, username, name } });
+    });
+
     db.collection("quizzes")
       .doc(userid)
       .set(
