@@ -10,30 +10,28 @@ import { withRouter } from "react-router-dom";
 
 const CSVEditor = ({ setEditor, setQuiz }) => {
   const [background] = useState(getColor);
+  const [error, setError] = useState(false);
 
   const handleFile = e => {
     const reader = new FileReader();
     const name = e.target.value.split(/(\\|\/)/g).pop();
     reader.onload = function() {
+      setError(false);
+
       const data = reader.result;
-      const output = [];
       const options = {
         trim: true,
         skip_empty_lines: true,
         relax_column_count: true
       };
-
-      parse(data, options)
-        .on("readable", function() {
-          let record;
-          while ((record = this.read())) {
-            output.push(record);
-          }
-        })
-        .on("end", function() {
-          setEditor("online");
-          setQuiz({ name, questions: output });
-        });
+      parse(data, options, (err, output) => {
+        if (err) {
+          setError(err.message);
+          return;
+        }
+        setEditor("online");
+        setQuiz({ name, questions: output });
+      });
     };
     reader.readAsText(e.target.files[0]);
   };
@@ -49,6 +47,12 @@ const CSVEditor = ({ setEditor, setQuiz }) => {
         <input type="file" accept=".csv" onChange={handleFile} />
         <span>Select File</span>
       </label>
+      {error && (
+        <div className="choiceContainer">
+          <h2>ERROR: Looks like your CSV has the wrong format.</h2>
+          <span style={{ color: "red", textAlign: "left" }}>{error}</span>
+        </div>
+      )}
       <button className="fullwidth-button" onClick={() => setEditor(null)}>
         Go Back
       </button>
