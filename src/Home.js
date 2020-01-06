@@ -9,7 +9,7 @@ const Home = ({ history }) => {
       <h1>Bayes-Up!</h1>
       <h1>--- ! ! ! ---</h1>
       <h1>
-        Development is in Progress. Some feature could have bugs and not work
+        Development is in Progress. Some features could have bugs and not work
         for you. We are sorry for any incovenience you may encounter.
       </h1>
       <h1>--- ! ! ! ---</h1>

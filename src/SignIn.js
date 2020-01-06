@@ -49,7 +49,7 @@ class SignIn extends React.Component {
             <h2>
               This app lets you create, answer and share Bayesian Multiple
               Choice Quiz. They are the same as MCQ except that instead of
-              selecting one answer, you must select probabilities to each
+              selecting one answer, you must select probabilities for every
               possible choice. Have fun!
             </h2>
             <h2>
