@@ -2,6 +2,17 @@ import React, { useState } from "react";
 import { getColor, httpGet } from "./utils";
 import { withRouter } from "react-router-dom";
 
+const customHash = input => {
+  var hash = 0;
+  if (input.length === 0) return hash;
+  for (var i = 0; i < input.length; i++) {
+    const char = input.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash;
+  }
+  return hash;
+};
+
 const QuizList = ({ history, setQuiz }) => {
   const [categories, setCategories] = useState([]);
   const [background] = useState(getColor);
@@ -20,12 +31,16 @@ const QuizList = ({ history, setQuiz }) => {
       const quiz = httpGet(
         `https://opentdb.com/api.php?amount=10&category=${id}&type=multiple&encode=base64`
       );
-      const questions = JSON.parse(quiz).results.map(x => [
+      console.log(JSON.parse(quiz).results);
+      const results = JSON.parse(quiz).results;
+      const questions = results.map(x => [
         atob(x.question),
         atob(x.correct_answer),
         ...x.incorrect_answers.map(atob)
       ]);
-      setQuiz({ quizId: `opentbd_${id}`, name, questions });
+      const questionIds = results.map(x => customHash(x.question));
+      console.log(questionIds);
+      setQuiz({ quizId: `opentbd_${id}`, name, questions, questionIds });
     }, 1);
   };
 
@@ -37,7 +52,7 @@ const QuizList = ({ history, setQuiz }) => {
         proportional to a quadratic rule. Choose a quiz below to get started.
       </h2>
       <h2>
-        The quiz below are extracted from the open trivia database (
+        The quizzes below are extracted from the open trivia database (
         <a href="https://opentdb.com/">https://opentdb.com/</a>)
       </h2>
       {categories.map(({ id, name }) => (

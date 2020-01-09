@@ -48,7 +48,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     setStartTime(new Date());
   }
 
-  const { questions, name, quizId } = quiz;
+  const { questions, name, quizId, questionIds } = quiz;
 
   const next = () => {
     setStartTime(new Date());
@@ -81,7 +81,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   const totalGuess = guesses[step].reduce((a, b) => a + b, 0);
   const [first, ...others] = guesses[step];
   const loss = (100 - first) ** 2 + others.reduce((a, b) => a + b ** 2, 0);
-  const score = Math.round((10000 - loss) / 100) / 10;
+  const score = (10000 - loss) / 1000;
 
   const saveEvent = () => {
     const user = firebase.auth().currentUser;
@@ -90,9 +90,11 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     db.collection("events").add({
       quizId: quizId || "missing id",
       quizName: name || "missing name",
+      questionIds: questionIds || [],
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       guesses,
       times,
+      score: totalScore,
       userid
     });
   };
