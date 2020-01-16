@@ -1,6 +1,7 @@
 import React from "react";
 import Slider from "@material-ui/core/Slider";
 import { withStyles } from "@material-ui/core/styles";
+import Latex from "react-latex"
 
 const CustomSlider = withStyles({
   root: {
@@ -50,7 +51,7 @@ export default ({ choice, guess, setGuess, background, submitted }) => {
         >
           -
         </button>
-        <span>{choice}</span>
+        <Latex>{choice}</Latex>
         <button
           className="fullwidth-button"
           disabled={guess > 99 || submitted}
