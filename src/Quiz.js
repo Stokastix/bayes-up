@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { getColor } from "./utils";
 import { db } from "./";
 import * as firebase from "firebase/app";
-import Choice from "./ChoiceBox";
+import ChoiceBox from "./ChoiceBox";
 import { withRouter } from "react-router-dom";
+import Latex from "react-latex";
 
 const Quiz = ({ quiz, history, setQuiz }) => {
   const [background, setBackground] = useState(getColor);
@@ -129,7 +130,6 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   const handleSubmit = () => {
     setSubmitted(true);
     setTotalScore(totalScore + score);
-    // TODO count time
     const answerTime = Number(new Date() - startTime);
     setTimes([...times, answerTime]);
   };
@@ -150,9 +150,11 @@ const Quiz = ({ quiz, history, setQuiz }) => {
           Question {step + 1} / {questions.length}
         </span>
       </div>
-      <h1>{question}</h1>
+      <h1>
+        <Latex>{question}</Latex>
+      </h1>
       {choiceList.map(([c, i]) => (
-        <Choice
+        <ChoiceBox
           key={question + c}
           choice={c}
           background={submitted && i === 0 ? "green" : "#bbbbbb"}
