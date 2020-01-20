@@ -31,11 +31,12 @@ const colors = [
   "yellowgreen"
 ];
 
-var idx = Math.floor(Math.random() * colors.length);
-
+var idx = -1
 export const getColor = () => {
-  idx += Math.floor(1 + 8 * Math.random());
-  return colors[idx % colors.length];
+  const newIdx = Math.floor(Math.random() * colors.length);
+  if (newIdx === idx) return getColor();
+  idx = newIdx
+  return colors[idx];
 };
 
 export const httpGet = url => {
