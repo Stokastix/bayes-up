@@ -17,7 +17,6 @@ const FetchQuiz = ({ history, setQuiz }) => {
   const { quizId } = useParams();
 
   const parseCsv = data => {
-    setQuiz(null);
     const output = [];
     const options = {
       trim: true,
@@ -38,6 +37,7 @@ const FetchQuiz = ({ history, setQuiz }) => {
   };
 
   function openQuiz() {
+    setQuiz(null);
     history.push("/quiz");
     fetch(dataUrl)
       .then(response => response.text())
