@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import * as firebase from "firebase/app";
+import { useHistory } from "react-router-dom";
+
 import { getColor, httpGet } from "./utils";
-import { withRouter } from "react-router-dom";
 
 const customHash = input => {
   var hash = 0;
@@ -13,11 +15,47 @@ const customHash = input => {
   return hash;
 };
 
-const QuizList = ({ history, setQuiz }) => {
-  const [categories, setCategories] = useState([]);
-  const [background] = useState(getColor);
+const PublicQuizList = () => {
+  const history = useHistory();
+  const [quizzes, setQuizzes] = useState(null);
+  const [error, setError] = useState(false);
 
-  if (categories.length === 0) {
+  if (!quizzes) {
+    const db = firebase.firestore();
+    db.collection("publicQuizzes")
+      .doc("list")
+      .get()
+      .then(doc =>
+        doc.exists ? setQuizzes(Object.entries(doc.data())) : setError(true)
+      )
+      .catch(() => setError(true));
+  }
+
+  return (
+    <>
+      <h2>Public Quizzes (you can request for your quiz to become public)</h2>
+      {error && <span>ERROR Loading quiz list.</span>}
+      {!error && !quizzes && <span>Loading quizzes . . .</span>}
+      {!error &&
+        quizzes &&
+        quizzes.map(([id, name]) => (
+          <button
+            className="fullwidth-button"
+            key={name}
+            onClick={() => history.push(`/q/${id}`)}
+          >
+            {name}
+          </button>
+        ))}
+    </>
+  );
+};
+
+const OpenTDbList = ({ setQuiz }) => {
+  const history = useHistory();
+  const [categories, setCategories] = useState(null);
+
+  if (!categories) {
     setTimeout(() => {
       const response = httpGet("https://opentdb.com/api_category.php");
       const { trivia_categories } = JSON.parse(response);
@@ -45,27 +83,44 @@ const QuizList = ({ history, setQuiz }) => {
   };
 
   return (
+    <>
+      <h2>
+        Quizzes from the open trivia database (
+        <a href="https://opentdb.com/">https://opentdb.com/</a>)
+      </h2>
+      {categories ? (
+        categories.map(({ id, name }) => (
+          <button
+            className="fullwidth-button"
+            key={name}
+            onClick={() => selectOpenTDB(id, name)}
+          >
+            {name}
+          </button>
+        ))
+      ) : (
+        <span>Loading quizzes . . .</span>
+      )}
+    </>
+  );
+};
+
+const QuizList = ({ setQuiz }) => {
+  const [background] = useState(getColor);
+
+  return (
     <div id="quizList" className="rootColumn" style={{ background }}>
       <h1>Choose a Quiz</h1>
       <h2>
         Each question can give up to 10 points. The number of points is
         proportional to a quadratic rule. Choose a quiz below to get started.
       </h2>
-      <h2>
-        The quizzes below are extracted from the open trivia database (
-        <a href="https://opentdb.com/">https://opentdb.com/</a>)
-      </h2>
-      {categories.map(({ id, name }) => (
-        <button
-          className="fullwidth-button"
-          key={name}
-          onClick={() => selectOpenTDB(id, name)}
-        >
-          {name}
-        </button>
-      ))}
+      <h2>- - - - -</h2>
+      <PublicQuizList />
+      <h2>- - - - -</h2>
+      <OpenTDbList setQuiz={setQuiz} />
     </div>
   );
 };
 
-export default withRouter(QuizList);
+export default QuizList;

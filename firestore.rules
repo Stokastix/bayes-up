@@ -1,6 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    match /publicQuizzes/list {
+    	allow read: if true;
+    }
+
     match /events/{documents=**} {
     	allow write: if true;
     }
