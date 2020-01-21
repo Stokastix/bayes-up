@@ -64,12 +64,12 @@ const OpenTDbList = ({ setQuiz }) => {
   }
 
   const selectOpenTDB = (id, name) => {
+    setQuiz(null);
     history.push("/quiz");
     setTimeout(() => {
       const quiz = httpGet(
         `https://opentdb.com/api.php?amount=10&category=${id}&type=multiple&encode=base64`
       );
-      console.log(JSON.parse(quiz).results);
       const results = JSON.parse(quiz).results;
       const questions = results.map(x => [
         atob(x.question),
@@ -77,7 +77,6 @@ const OpenTDbList = ({ setQuiz }) => {
         ...x.incorrect_answers.map(atob)
       ]);
       const questionIds = results.map(x => customHash(x.question));
-      console.log(questionIds);
       setQuiz({ quizId: `opentbd_${id}`, name, questions, questionIds });
     }, 1);
   };

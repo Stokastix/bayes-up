@@ -37,6 +37,7 @@ const FetchQuiz = ({ history, setQuiz }) => {
   };
 
   function openQuiz() {
+    setQuiz(null);
     history.push("/quiz");
     fetch(dataUrl)
       .then(response => response.text())

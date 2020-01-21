@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { getColor } from "./utils";
-import { db } from "./";
 import * as firebase from "firebase/app";
-import Choice from "./ChoiceBox";
+import ChoiceBox from "./ChoiceBox";
+
+import { getColor, shuffle } from "./utils";
+import { db } from "./";
 import { withRouter } from "react-router-dom";
 
 const Quiz = ({ quiz, history, setQuiz }) => {
@@ -67,9 +68,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   if (!guesses[step]) {
     guesses[step] = choices.map(_ => 0);
     setGuesses({ ...guesses });
-    setChoiceList(
-      choices.map((c, i) => [c, i]).sort(() => 0.5 - Math.random())
-    );
+    setChoiceList(shuffle(choices.map((c, i) => [c, i])));
     return null;
   }
 
@@ -152,7 +151,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
       </div>
       <h1>{question}</h1>
       {choiceList.map(([c, i]) => (
-        <Choice
+        <ChoiceBox
           key={question + c}
           choice={c}
           submitted={submitted}
