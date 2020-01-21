@@ -17,6 +17,7 @@ const FetchQuiz = ({ history, setQuiz }) => {
   const { quizId } = useParams();
 
   const parseCsv = data => {
+    setQuiz(null);
     const output = [];
     const options = {
       trim: true,
