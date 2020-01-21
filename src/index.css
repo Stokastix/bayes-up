@@ -200,14 +200,13 @@ th {
   position: relative;
   width: calc(100% - 16px);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .sliderValue {
   flex: 0 0 80px;
   height: 100%;
-  border-left: 1px solid black;
+
   text-align: right;
   font-size: 120%;
   font-weight: bold;

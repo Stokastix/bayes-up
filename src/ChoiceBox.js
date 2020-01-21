@@ -7,7 +7,7 @@ const CustomSlider = withStyles({
     height: 24,
     padding: "6px 0px",
     flex: "0 0 auto",
-    width: "100%"
+    width: "95%"
   },
   thumb: {
     height: 32,
@@ -75,7 +75,7 @@ export default ({
         <div className="sliderValue">
           <span>{guess.toFixed(0)}%</span>
           <span style={{ color }}>
-            {submitted ? (isCorrect ? "+" : "-") + score.toFixed(2) : "!"}
+            {submitted ? (isCorrect ? "+" : "-") + score.toFixed(2) : "."}
           </span>
         </div>
       </div>
