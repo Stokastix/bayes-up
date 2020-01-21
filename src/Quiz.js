@@ -143,7 +143,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
       <div className="quiz-progress">
         <div
           style={{
-            width: `${((100 * (step + 1)) / questions.length).toFixed(0)}%`
+            width: `${((100 * step) / questions.length).toFixed(0)}%`
           }}
         />
         <span>
@@ -155,10 +155,10 @@ const Quiz = ({ quiz, history, setQuiz }) => {
         <Choice
           key={question + c}
           choice={c}
-          background={submitted && i === 0 ? "green" : "#bbbbbb"}
           submitted={submitted}
           guess={guesses[step][i]}
           setGuess={setGuess(i)}
+          isCorrect={i === 0}
         />
       ))}
       {submitted ? (
