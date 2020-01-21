@@ -7,6 +7,7 @@ import Stats from "./Stats";
 import Settings from "./Settings";
 import SignIn from "./SignIn";
 import FetchQuiz from "./FetchQuiz";
+import Share from "./Share";
 import MyQuizzes from "./MyQuizzes";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
@@ -43,6 +44,9 @@ const App = () => {
             </Route>
             <Route exact path="/q/:quizId">
               <FetchQuiz setQuiz={setQuiz} path={path} />
+            </Route>
+            <Route exact path="/s/:quizId">
+              <Share />
             </Route>
             <Route exact path="/myquizzes">
               <MyQuizzes />

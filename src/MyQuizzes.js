@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { getColor } from "./utils";
 import * as firebase from "firebase/app";
-import { withRouter } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
-const MyQuizzes = ({ history }) => {
+const MyQuizzes = () => {
+  const history = useHistory();
   const [background] = useState(getColor);
   const [quizList, setQuizList] = useState(null);
 
@@ -40,7 +41,7 @@ const MyQuizzes = ({ history }) => {
               <button
                 className="fullwidth-button"
                 key={quizId}
-                onClick={() => {}}
+                onClick={() => history.push(`/s/${quizId}`)}
               >
                 {quizName}
               </button>
@@ -58,4 +59,4 @@ const MyQuizzes = ({ history }) => {
   );
 };
 
-export default withRouter(MyQuizzes);
+export default MyQuizzes;
