@@ -6,7 +6,7 @@ import parse from "csv-parse";
 import stringify from "csv-stringify";
 
 import { getColor, shortID } from "./utils";
-import { withRouter } from "react-router-dom";
+import { withRouter, useHistory } from "react-router-dom";
 
 const CSVEditor = ({ setEditor, setQuiz }) => {
   const [background] = useState(getColor);
@@ -109,6 +109,7 @@ const QuestionEditorBox = ({ question, setQuestion, deleteQuestion }) => {
 };
 
 const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
+  const history = useHistory();
   const [background] = useState(getColor);
   const [errors, setErrors] = useState([]);
 
@@ -157,7 +158,7 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
     const userid = user.uid;
     const username = user.displayName || "Guest User";
 
-    setEditor("share");
+    history.push(`/s/${quizId}`);
 
     const { name, questions } = quiz;
     stringify(questions, (err, output) => {
@@ -209,39 +210,6 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
   );
 };
 
-const DisplayShare = ({ history, quizId }) => {
-  const [background] = useState(getColor);
-
-  const URL = `${window.location.host}/q/${quizId}`;
-
-  const copyToClipboard = () => {
-    const el = document.createElement("textarea");
-    el.value = URL;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand("copy");
-    document.body.removeChild(el);
-  };
-  return (
-    <div id="editor" className="rootColumn" style={{ background }}>
-      <h1>Quiz Created!</h1>
-      <h2>Your quiz is now available at the URL:</h2>
-      <a className="share-link" href={`/q/${quizId}`}>
-        {URL}
-      </a>
-      <button className="fullwidth-button" onClick={copyToClipboard}>
-        Copy URL
-      </button>
-      <button
-        className="fullwidth-button"
-        onClick={() => history.push("/home")}
-      >
-        Home
-      </button>
-    </div>
-  );
-};
-
 const Editor = ({ history }) => {
   const [background] = useState(getColor);
   const [editor, setEditor] = useState(null);
@@ -288,10 +256,6 @@ const Editor = ({ history }) => {
         quizId={quizId}
       />
     );
-  }
-
-  if (editor === "share") {
-    return <DisplayShare history={history} quizId={quizId} />;
   }
 };
 
