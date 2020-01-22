@@ -14,7 +14,6 @@ const CSVEditor = ({ setEditor, setQuiz }) => {
 
   const handleFile = e => {
     const reader = new FileReader();
-    const name = e.target.value.split(/(\\|\/)/g).pop();
     reader.onload = function() {
       setError(false);
 
@@ -30,7 +29,7 @@ const CSVEditor = ({ setEditor, setQuiz }) => {
           return;
         }
         setEditor("online");
-        setQuiz({ name, questions: output });
+        setQuiz({ name: "", questions: output });
       });
     };
     reader.readAsText(e.target.files[0]);
@@ -180,8 +179,7 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz }) => {
       );
   };
 
-  console.log(quiz);
-  if (!quiz || !quiz.name || !quiz.questions) {
+  if (!quiz || quiz.name === undefined || !quiz.questions) {
     return (
       <div id="editor" className="rootColumn" style={{ background }}>
         <h1>Editor</h1>
@@ -227,14 +225,10 @@ const Editor = () => {
   const { quizId } = useParams();
   const [background] = useState(getColor);
 
+  console.log(quizId);
+
   const [editor, setEditor] = useState(quizId ? "online" : null);
-  const [quiz, setQuiz] = useState(
-    !quizId && {
-      name: "",
-      quizId: shortID(12),
-      questions: [["", "", "", "", ""]]
-    }
-  );
+  const [quiz, setQuiz] = useState(null);
 
   if (quizId && !quiz) {
     // Fetching Quiz and filling in the editor
@@ -277,7 +271,14 @@ const Editor = () => {
         </button>
         <button
           className="fullwidth-button"
-          onClick={() => setEditor("online")}
+          onClick={() => {
+            setEditor("online");
+            setQuiz({
+              name: "",
+              quizId: shortID(12),
+              questions: [["", "", "", "", ""]]
+            });
+          }}
         >
           Create online
         </button>
