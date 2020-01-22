@@ -29,7 +29,7 @@ const CSVEditor = ({ setEditor, setQuiz }) => {
           return;
         }
         setEditor("online");
-        setQuiz({ name: "", questions: output });
+        setQuiz({ quizId: shortID(12), name: "", questions: output });
       });
     };
     reader.readAsText(e.target.files[0]);
@@ -224,9 +224,6 @@ const Editor = () => {
   const history = useHistory();
   const { quizId } = useParams();
   const [background] = useState(getColor);
-
-  console.log(quizId);
-
   const [editor, setEditor] = useState(quizId ? "online" : null);
   const [quiz, setQuiz] = useState(null);
 
@@ -266,12 +263,19 @@ const Editor = () => {
       <div id="editor" className="rootColumn" style={{ background }}>
         <h1>Create a Quiz</h1>
         <h2>You can create your own quiz and share it.</h2>
-        <button className="fullwidth-button" onClick={() => setEditor("csv")}>
+        <button
+          className="fullwidth-button"
+          onClick={() => {
+            history.push("/editor");
+            setEditor("csv");
+          }}
+        >
           Create from a CSV file
         </button>
         <button
           className="fullwidth-button"
           onClick={() => {
+            history.push("/editor");
             setEditor("online");
             setQuiz({
               name: "",
