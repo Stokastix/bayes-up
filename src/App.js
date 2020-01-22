@@ -34,7 +34,10 @@ const App = () => {
               <Quiz quiz={quiz} setQuiz={setQuiz} />
             </Route>
             <Route exact path="/editor">
-              <Editor quiz={quiz} />
+              <Editor />
+            </Route>
+            <Route exact path="/e/:quizId">
+              <Editor />
             </Route>
             <Route exact path="/stats">
               <Stats />

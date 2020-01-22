@@ -17,23 +17,14 @@ const FetchQuiz = ({ history, setQuiz }) => {
   const { quizId } = useParams();
 
   const parseCsv = data => {
-    const output = [];
     const options = {
       trim: true,
       skip_empty_lines: true,
       relax_column_count: true
     };
-
-    parse(data, options)
-      .on("readable", function() {
-        let record;
-        while ((record = this.read())) {
-          output.push(record);
-        }
-      })
-      .on("end", function() {
-        setQuiz({ name, quizId, questions: output });
-      });
+    parse(data, options, (_, output) => {
+      setQuiz({ name, quizId, questions: output });
+    });
   };
 
   function openQuiz() {

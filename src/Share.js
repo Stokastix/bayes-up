@@ -30,6 +30,12 @@ export default () => {
       </button>
       <button
         className="fullwidth-button"
+        onClick={() => history.push(`/e/${quizId}`)}
+      >
+        Edit Quiz
+      </button>
+      <button
+        className="fullwidth-button"
         onClick={() => history.push("/home")}
       >
         Home
