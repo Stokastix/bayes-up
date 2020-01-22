@@ -50,7 +50,9 @@ export default ({
   };
 
   const error = isCorrect ? (100 - guess) ** 2 / 1000 : guess ** 2 / 1000;
-  const score = isCorrect ? 10 - error : error;
+  const scoreIfRight = 10 - (100 - guess) ** 2 / 1000;
+  const scoreIfWrong = guess ** 2 / 1000;
+  const score = isCorrect ? scoreIfRight : scoreIfWrong;
 
   const color = submitted
     ? isCorrect
@@ -64,7 +66,7 @@ export default ({
       : error < 2.5
       ? "black"
       : "red"
-    : "transparent";
+    : "black";
 
   return (
     <div className="choiceContainer">
@@ -75,7 +77,10 @@ export default ({
         <div className="sliderValue">
           <span>{guess.toFixed(0)}%</span>
           <span style={{ color }}>
-            {submitted ? (isCorrect ? "+" : "-") + score.toFixed(2) : "."}
+            {submitted
+              ? `${isCorrect ? "+" : "-"}${score.toFixed(2)}`
+              : `+${scoreIfRight.toFixed(1)} / -${scoreIfWrong.toFixed(1)}`}
+            {/* {submitted ?  : "."} */}
           </span>
         </div>
       </div>
