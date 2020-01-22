@@ -65,9 +65,13 @@ export default ({
         </div>
       </div>
       <div className="sliderValue">
-        <span style={{ color: colorRight }}>+{scoreIfRight.toFixed(2)}</span>
+        <span style={{ color: colorRight }}>
+          +{scoreIfRight.toFixed(scoreIfRight % 10 === 0 ? 0 : 2)}
+        </span>
         <span>{guess.toFixed(0)}%</span>
-        <span style={{ color: colorWrong }}>-{scoreIfWrong.toFixed(2)}</span>
+        <span style={{ color: colorWrong }}>
+          -{scoreIfWrong.toFixed(scoreIfWrong % 10 === 0 ? 0 : 2)}
+        </span>
       </div>
       <div className="sliderContainer">
         <CustomSlider
