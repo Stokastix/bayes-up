@@ -54,35 +54,20 @@ export default ({
   const scoreIfWrong = guess ** 2 / 1000;
   const score = isCorrect ? scoreIfRight : scoreIfWrong;
 
-  const color = submitted
-    ? isCorrect
-      ? error <= 4
-        ? "green"
-        : error < 7
-        ? "black"
-        : "red"
-      : error <= 1
-      ? "green"
-      : error < 2.5
-      ? "black"
-      : "red"
-    : "black";
+  const colorRight = !submitted || isCorrect ? "black" : "transparent";
+  const colorWrong = !submitted || !isCorrect ? "black" : "transparent";
 
   return (
-    <div className="choiceContainer">
+    <div className="choiceContainer" style={{ background }}>
       <div className="choice">
-        <div className="choiceText" style={{ background }}>
+        <div className="choiceText">
           <span>{choice}</span>
         </div>
-        <div className="sliderValue">
-          <span>{guess.toFixed(0)}%</span>
-          <span style={{ color }}>
-            {submitted
-              ? `${isCorrect ? "+" : "-"}${score.toFixed(2)}`
-              : `+${scoreIfRight.toFixed(1)} / -${scoreIfWrong.toFixed(1)}`}
-            {/* {submitted ?  : "."} */}
-          </span>
-        </div>
+      </div>
+      <div className="sliderValue">
+        <span style={{ color: colorRight }}>+{scoreIfRight.toFixed(2)}</span>
+        <span>{guess.toFixed(0)}%</span>
+        <span style={{ color: colorWrong }}>-{scoreIfWrong.toFixed(2)}</span>
       </div>
       <div className="sliderContainer">
         <CustomSlider

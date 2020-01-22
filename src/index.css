@@ -153,6 +153,7 @@ h2 {
   height: 100%;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
 }
 
 /* 
@@ -204,16 +205,14 @@ th {
 }
 
 .sliderValue {
-  flex: 0 0 128px;
+  width: calc(100% - 16px);
   height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 
-  text-align: right;
   font-size: 120%;
   font-weight: bold;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 .quiz-header {
