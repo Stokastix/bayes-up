@@ -110,10 +110,6 @@ const QuizList = ({ setQuiz }) => {
   return (
     <div id="quizList" className="rootColumn" style={{ background }}>
       <h1>Choose a Quiz</h1>
-      <h2>
-        Each question can give up to 10 points. The number of points is
-        proportional to a quadratic rule. Choose a quiz below to get started.
-      </h2>
       <h2>- - - - -</h2>
       <PublicQuizList />
       <h2>- - - - -</h2>

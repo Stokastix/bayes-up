@@ -32,10 +32,7 @@ const MyQuizzes = () => {
       ) : (
         <>
           <h1>Your Quizzes</h1>
-          <h2>
-            [upcoming features: See stats of your quizzes and modify/delete
-            them]
-          </h2>
+          <h2>Click on a quiz to share it, edit it, or see the results.</h2>
           {Object.entries(quizList).map(([quizId, quizName]) => {
             return (
               <button
@@ -53,7 +50,7 @@ const MyQuizzes = () => {
         className="fullwidth-button"
         onClick={() => history.push("/home")}
       >
-        Back to Home
+        Home
       </button>
     </div>
   );

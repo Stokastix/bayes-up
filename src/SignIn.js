@@ -53,14 +53,15 @@ class SignIn extends React.Component {
               possible choice. Have fun!
             </h2>
             <h2>
-              This app collects data that could maybe be used for research on
-              calibration of probability judgments and education. Login as a
-              guest to stay fully anonymous.
+              This app collects data that could be made public to benefit
+              research on education and calibration of probability judgments.
+              The collected data is anonymized but there could be ways to
+              identify you anyway. Please do not input in the app any sensitive
+              information that you wish to keep private.
             </h2>
             <StyledFirebaseAuth
               uiConfig={this.uiConfig}
               firebaseAuth={firebase.auth()}
-              style={{ backgroundColor: "blue" }}
             />
           </>
         ) : (

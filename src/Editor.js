@@ -290,7 +290,7 @@ const Editor = () => {
           className="fullwidth-button"
           onClick={() => history.push("/home")}
         >
-          Go Back
+          Home
         </button>
       </div>
     );
