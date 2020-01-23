@@ -19,10 +19,10 @@ const Settings = ({ history, setLoggedIn }) => {
         className="fullwidth-button"
         onClick={() => history.push("/myquizzes")}
       >
-        See My Quizzes
+        My Quizzes
       </button>
       <button className="fullwidth-button" onClick={() => history.push("/")}>
-        Back to Home
+        Home
       </button>
       <button className="fullwidth-button" onClick={logout}>
         Logout

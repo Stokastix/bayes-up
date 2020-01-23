@@ -7,17 +7,21 @@ const Home = ({ history }) => {
   return (
     <div id="home" className="rootColumn" style={{ background }}>
       <h1>Bayes-Up!</h1>
-      <h1>--- ! ! ! ---</h1>
-      <h1>
-        Development is in Progress. Some features could have bugs and not work
-        for you. We are sorry for any incovenience you may encounter.
-      </h1>
-      <h1>--- ! ! ! ---</h1>
+      <h2>- - - - - -</h2>
+      <h2>
+        Bayes-Up is still in Beta version.
+        <br />
+        Feedback on bugs or features is welcome.
+        <br />
+        We are on Github:{" "}
+        <a href="https://github.com/Stokastix/bayes-up">Bayes-Up</a>
+      </h2>
+      <h2>- - - - - -</h2>
       <button
         className="fullwidth-button"
         onClick={() => history.push("/quizList")}
       >
-        Take a Quiz
+        See Quizzes
       </button>
       <button
         className="fullwidth-button"
