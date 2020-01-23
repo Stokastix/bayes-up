@@ -59,7 +59,8 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     setSubmitted(false);
     if (step === questions.length - 1) {
       saveEvent();
-      saveStats();
+      saveUserStats();
+      saveQuizStats();
     }
   };
 
@@ -98,7 +99,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     });
   };
 
-  const saveStats = () => {
+  const saveUserStats = () => {
     const user = firebase.auth().currentUser;
     if (!user) return;
     const userid = user.uid;
@@ -120,8 +121,22 @@ const Quiz = ({ quiz, history, setQuiz }) => {
       },
       { totalScore: firebase.firestore.FieldValue.increment(totalScore) }
     );
+
     db.collection("stats")
       .doc(userid)
+      .set(update, { merge: true });
+  };
+
+  const saveQuizStats = () => {
+    const update = { participants: firebase.firestore.FieldValue.increment(1) };
+    Object.entries(guesses).forEach(([k, guesses]) => {
+      guesses.forEach((g, i) => {
+        update[`${k}_${i}`] = firebase.firestore.FieldValue.increment(g);
+      });
+    });
+
+    db.collection("results")
+      .doc(quizId)
       .set(update, { merge: true });
   };
 

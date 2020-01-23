@@ -36,6 +36,12 @@ export default () => {
       </button>
       <button
         className="fullwidth-button"
+        onClick={() => history.push(`/r/${quizId}`)}
+      >
+        See Results
+      </button>
+      <button
+        className="fullwidth-button"
         onClick={() => history.push("/home")}
       >
         Home

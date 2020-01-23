@@ -16,5 +16,9 @@ service cloud.firestore {
     match /quizzes/{userId} {
       allow read, write: if request.auth.uid == userId;
     }
+    
+    match /results/{documents=**} {
+      allow read, write: if request.auth != null;
+    }
   }
 }
