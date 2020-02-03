@@ -272,3 +272,25 @@ th {
   font-size: 150%;
   margin-bottom: 16px;
 }
+
+.stat-graph-container {
+  width: 500px;
+  max-width: calc(100% - 4px);
+  height: 450px;
+  flex: 0 0 auto;
+
+  overflow: auto;
+}
+
+.stat-graph {
+  height: 420px;
+  width: 835px;
+}
+
+svg text {
+  transform: translate(0, 5px);
+}
+
+.stat-explanation {
+  text-align: justify;
+}
