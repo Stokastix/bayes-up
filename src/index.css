@@ -220,33 +220,35 @@ th {
 
 .quiz-header {
   width: 500px;
-  max-width: 100%;
+  max-width: calc(100% - 4px);
   margin: 0px;
+  margin-bottom: 12px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.quiz-header button {
-  padding: 8px;
+.quitQuizButton {
   font-size: 100%;
-  border: 2px solid black;
+  border: 2px solid #000000;
   background: none;
+  height: 32px;
+  margin: 0px;
+  padding-left: 8px;
+  padding-right: 8px;
+  display: flex;
+  align-items: center;
 }
 
 .quiz-progress {
   position: relative;
-  width: 500px;
-  max-width: calc(100% - 4px);
+  flex: 1 0 0px;
 
-  margin: 0px;
-  margin-top: 12px;
-  margin-bottom: 12px;
+  margin-right: 4px;
   padding: 0px;
   border: 2px solid #000000;
   height: 32px;
-
-  flex: 0 0 auto;
 }
 
 .quiz-progress span {
@@ -274,7 +276,7 @@ th {
 }
 
 .stat-graph-container {
-  width: 500px;
+  width: 625px;
   max-width: calc(100% - 4px);
   height: 450px;
   flex: 0 0 auto;
@@ -283,8 +285,8 @@ th {
 }
 
 .stat-graph {
-  height: 420px;
-  width: 835px;
+  height: 440px;
+  width: 625px;
 }
 
 svg text {
