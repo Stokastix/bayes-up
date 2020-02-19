@@ -106,6 +106,7 @@ const OpenTDbList = ({ setQuiz }) => {
 
 const QuizList = ({ setQuiz }) => {
   const [background] = useState(getColor);
+  const history = useHistory();
 
   return (
     <div id="quizList" className="rootColumn" style={{ background }}>
@@ -114,6 +115,13 @@ const QuizList = ({ setQuiz }) => {
       <PublicQuizList />
       <h2>- - - - -</h2>
       <OpenTDbList setQuiz={setQuiz} />
+      <h2>- - - - -</h2>
+      <button
+        className="fullwidth-button"
+        onClick={() => history.push("/home")}
+      >
+        Back to Home
+      </button>
     </div>
   );
 };

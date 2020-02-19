@@ -151,18 +151,22 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   return (
     <div className="rootColumn" style={{ background }}>
       <div className="quiz-header">
-        <h1>Current Score: {totalScore.toFixed(1)}</h1>
-        <button onClick={() => saveEvent() || quitQuiz()}>Quit</button>
-      </div>
-      <div className="quiz-progress">
+        <div className="quiz-progress">
+          <div
+            style={{
+              width: `${((100 * step) / questions.length).toFixed(0)}%`
+            }}
+          />
+          <span>
+            Question {step + 1} / {questions.length}
+          </span>
+        </div>
         <div
-          style={{
-            width: `${((100 * step) / questions.length).toFixed(0)}%`
-          }}
-        />
-        <span>
-          Question {step + 1} / {questions.length}
-        </span>
+          className="quitQuizButton"
+          onClick={() => saveEvent() || quitQuiz()}
+        >
+          <span>Quit</span>
+        </div>
       </div>
       <h1>{question}</h1>
       {choiceList.map(([c, i]) => (
