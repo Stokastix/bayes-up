@@ -205,7 +205,7 @@ th {
 }
 
 .sliderValue {
-  width: calc(100% - 24px);
+  width: calc(90% - 24px);
   padding: 2px;
   height: 100%;
   display: flex;
@@ -227,6 +227,16 @@ th {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.react-player {
+  max-width: calc(100% - 4px);
+}
+
+.react-markdown {
+  width: 500;
+  max-width: calc(100% - 4px);
+  text-align: left;
 }
 
 .quitQuizButton {

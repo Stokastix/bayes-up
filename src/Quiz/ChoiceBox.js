@@ -2,6 +2,8 @@ import React from "react";
 import Slider from "@material-ui/core/Slider";
 import { withStyles } from "@material-ui/core/styles";
 
+import { computeScore } from "../utils";
+
 const CustomSlider = withStyles({
   root: {
     height: 24,
@@ -49,13 +51,7 @@ export default ({
     setGuess(newValue);
   };
 
-  const error = isCorrect ? (100 - guess) ** 2 / 1000 : guess ** 2 / 1000;
-  const scoreIfRight = 10 - (100 - guess) ** 2 / 1000;
-  const scoreIfWrong = guess ** 2 / 1000;
-  const score = isCorrect ? scoreIfRight : scoreIfWrong;
-
-  const colorRight = !submitted || isCorrect ? "black" : "transparent";
-  const colorWrong = !submitted || !isCorrect ? "black" : "transparent";
+  const score = computeScore(guess / 100);
 
   return (
     <div className="choiceContainer" style={{ background }}>
@@ -65,13 +61,8 @@ export default ({
         </div>
       </div>
       <div className="sliderValue">
-        <span style={{ color: colorRight }}>
-          +{scoreIfRight.toFixed(scoreIfRight % 10 === 0 ? 0 : 2)}
-        </span>
         <span>{guess.toFixed(0)}%</span>
-        <span style={{ color: colorWrong }}>
-          -{scoreIfWrong.toFixed(scoreIfWrong % 10 === 0 ? 0 : 2)}
-        </span>
+        <span>{score.toFixed(1)}</span>
       </div>
       <div className="sliderContainer">
         <CustomSlider

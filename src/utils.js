@@ -63,3 +63,11 @@ export const shortID = n => {
     .map(_ => alphabet[Math.floor(Math.random() * alphabet.length)])
     .join("");
 };
+
+export const computeScore = p => {
+  if (p < 0.01) return -10;
+  if (p < 0.06) return -8;
+  const loss = x => -Math.log2(Math.max(x, 0.02));
+  const score = (10 * (loss(1 / 4) - loss(p))) / (loss(1 / 4) - loss(1));
+  return Math.round(10 * score) / 10;
+};
