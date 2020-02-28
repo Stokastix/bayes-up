@@ -1,24 +1,24 @@
 import React, { useState } from "react";
 import * as firebase from "firebase/app";
-import { withRouter } from "react-router-dom";
+import { useHistory, withRouter } from "react-router-dom";
 
-import { getColor } from "../utils";
+import { getColor, computeScore } from "../utils";
 
 import Question from "./Question";
 import Youtube from "./Youtube";
 import Markdown from "./Markdown";
 
-const QuizHeader = ({ step, total, quit }) => {
+const QuizHeader = ({ step, nSteps, quit }) => {
   return (
     <div className="quiz-header">
       <div className="quiz-progress">
         <div
           style={{
-            width: `${((100 * step) / total).toFixed(0)}%`
+            width: `${((100 * step) / nSteps).toFixed(0)}%`
           }}
         />
         <span>
-          Step {step + 1} / {total}
+          Step {step + 1} / {nSteps}
         </span>
       </div>
       <div className="quitQuizButton" onClick={quit}>
@@ -42,47 +42,58 @@ const QuizContent = ({ content, ...props }) => {
   return <Question content={content} {...props} />;
 };
 
+const QuizEnd = ({ score, background }) => {
+  const history = useHistory();
+  return (
+    <div className="rootColumn" style={{ background }}>
+      <h1>Quiz Completed!</h1>
+      <h2>You score a total of {score.toFixed(1)}.</h2>
+      {score < 0 && (
+        <h2>
+          You can do better next time! It's common to do errors for everyone :)
+          Try being less confident
+        </h2>
+      )}
+      {score > 0 && <h1>Congratulations !</h1>}
+      <button
+        className="fullwidth-button"
+        onClick={() => history.push("/home")}
+      >
+        Home
+      </button>
+    </div>
+  );
+};
+
 const Quiz = ({ quiz, history, setQuiz }) => {
   const [background, setBackground] = useState(getColor);
   const [step, setStep] = useState(0);
-  const [guesses, setGuesses] = useState({});
-  const [times, setTimes] = useState([]);
-  const [totalScore, setTotalScore] = useState(0);
-  const [startTime, setStartTime] = useState(null);
+  const [startTime, setStartTime] = useState(new Date());
+
+  const [data, setData] = useState({
+    steps: [],
+    times: [],
+    score: 0
+  });
 
   const quitQuiz = () => {
     history.push("/home");
-    setQuiz(null);
-    setStep(0);
-    setGuesses(null);
-    setTotalScore(0);
   };
 
-  if (!quiz || step >= quiz.questions.length) {
+  if (!quiz) {
     return (
       <div className="rootColumn" style={{ background }}>
-        {!quiz && <p>Loading quiz...</p>}
-        {!!quiz && (
-          <>
-            <h1>Congratulations !</h1>
-            <h2>
-              You score a total of {totalScore.toFixed(1)} out of{" "}
-              {10 * quiz.questions.length} points.
-            </h2>
-          </>
-        )}
-        <button className="fullwidth-button" onClick={quitQuiz}>
-          Home
-        </button>
+        <p>Loading quiz...</p>
       </div>
     );
   }
 
-  if (!startTime) {
-    setStartTime(new Date());
+  if (step >= quiz.questions.length) {
+    return <QuizEnd score={data.score} />;
   }
 
   const { questions, name, quizId, questionIds } = quiz;
+  const content = questions[step];
 
   const next = () => {
     setStartTime(new Date());
@@ -96,11 +107,25 @@ const Quiz = ({ quiz, history, setQuiz }) => {
   };
 
   const submit = contentSubmitted => {
-    // setTotalScore(totalScore + score);
-    // const answerTime = Number(new Date() - startTime);
-    // setTimes([...times, answerTime]);
-    //  guesses[step] = choices.map(_ => 0);
-    //  setGuesses({ ...guesses });
+    const newTime = Number(new Date() - startTime);
+    var newScore = 0;
+    var newContent = null;
+
+    const [contentType, ...c] = content;
+    if (contentType === "YOUTUBE") {
+      newContent = ["YOUTUBE", ...c];
+    } else if (contentType === "MARKDOWN") {
+      newContent = ["MARKDOWN", ...c];
+    } else {
+      // contentType === "QUESTION"
+      newScore = computeScore(contentSubmitted[0] / 100);
+      newContent = contentSubmitted;
+    }
+
+    data.score = data.score + newScore;
+    data.steps = [...data.steps, newContent];
+    data.times = [...data.times, newTime];
+    setData({ ...data });
   };
 
   const saveEvent = () => {
@@ -114,10 +139,10 @@ const Quiz = ({ quiz, history, setQuiz }) => {
       quizName: name || "missing name",
       questionIds: questionIds || [],
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      guesses,
-      times,
-      score: totalScore,
-      userid
+      userid,
+      steps: data.steps.reduce((a, v, i) => ({ ...a, [`${i}`]: v }), {}),
+      times: data.times,
+      score: data.score
     });
   };
 
@@ -127,7 +152,8 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     const userid = user.uid;
 
     const _update = {};
-    Object.values(guesses).forEach(g => {
+    Object.values(data.steps).forEach(g => {
+      if (g[0] === "YOUTUBE" || g[0] === "MARKDOWN") return;
       const [correctGuess, ...incorrectGuesses] = g;
       const correctKey = `correct_${Math.round(correctGuess)}%`;
       _update[correctKey] = (_update[correctKey] || 0) + 1;
@@ -141,7 +167,7 @@ const Quiz = ({ quiz, history, setQuiz }) => {
         acc[k] = firebase.firestore.FieldValue.increment(v);
         return acc;
       },
-      { totalScore: firebase.firestore.FieldValue.increment(totalScore) }
+      { totalScore: firebase.firestore.FieldValue.increment(data.score) }
     );
 
     const db = firebase.firestore();
@@ -152,7 +178,8 @@ const Quiz = ({ quiz, history, setQuiz }) => {
 
   const saveQuizStats = () => {
     const update = { participants: firebase.firestore.FieldValue.increment(1) };
-    Object.entries(guesses).forEach(([k, guesses]) => {
+    data.steps.forEach((guesses, k) => {
+      if (guesses[0] === "YOUTUBE" || guesses[0] === "MARKDOWN") return;
       guesses.forEach((g, i) => {
         update[`${k}_${i}`] = firebase.firestore.FieldValue.increment(g);
       });
@@ -168,10 +195,11 @@ const Quiz = ({ quiz, history, setQuiz }) => {
     <div className="rootColumn" style={{ background }}>
       <QuizHeader
         step={step}
-        total={questions.length}
+        nSteps={questions.length}
         quit={() => saveEvent() || quitQuiz()}
+        score={data.score}
       />
-      <QuizContent content={questions[step]} next={next} submit={submit} />
+      <QuizContent content={content} next={next} submit={submit} />
     </div>
   );
 };

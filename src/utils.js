@@ -64,10 +64,13 @@ export const shortID = n => {
     .join("");
 };
 
-export const computeScore = p => {
-  if (p < 0.01) return -10;
-  if (p < 0.06) return -8;
+export const computeScore = (p, k) => {
+  if (p < 0 || p > 1) console.error("p should be a probability");
+
+  // if (p < 0.01) return -10;
+  // if (p < 0.06) return -8;
   const loss = x => -Math.log2(Math.max(x, 0.02));
-  const score = (10 * (loss(1 / 4) - loss(p))) / (loss(1 / 4) - loss(1));
+  // const loss = x => (1 - x) ** 2;
+  const score = (10 * (loss(1 / k) - loss(p))) / (loss(1 / k) - loss(1));
   return Math.round(10 * score) / 10;
 };

@@ -120,7 +120,7 @@ const QuizList = ({ setQuiz }) => {
         className="fullwidth-button"
         onClick={() => history.push("/home")}
       >
-        Back to Home
+        Home
       </button>
     </div>
   );

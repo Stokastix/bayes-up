@@ -20,13 +20,21 @@ export default ({ content, next, submit }) => {
     submit(guess);
   };
 
+  const handleNext = () => {
+    setSubmitted(false);
+    setChoiceList(null);
+    _setGuess([]);
+    next();
+  };
+
   const setGuess = i => x => {
     guess[i] = x;
     _setGuess([...guess]);
   };
 
+  const nChoices = choiceList.length;
   const totalGuess = guess.reduce((a, b) => a + b, 0);
-  const score = computeScore(guess[0] / 100);
+  const score = computeScore(guess[0] / 100, nChoices);
 
   return (
     <>
@@ -39,6 +47,7 @@ export default ({ content, next, submit }) => {
           guess={guess[i]}
           setGuess={setGuess(i)}
           isCorrect={i === 0}
+          nChoices={nChoices}
         />
       ))}
       {submitted ? (
@@ -47,11 +56,15 @@ export default ({ content, next, submit }) => {
         <h2>Total guess: {totalGuess.toFixed(0)}%</h2>
       )}
       {submitted ? (
-        <button className="fullwidth-button" onClick={next}>
+        <button className="fullwidth-button" onClick={handleNext}>
           Next
         </button>
       ) : (
-        <button className="fullwidth-button" onClick={handleSubmit}>
+        <button
+          className="fullwidth-button"
+          onClick={handleSubmit}
+          disabled={totalGuess !== 100}
+        >
           Submit
         </button>
       )}

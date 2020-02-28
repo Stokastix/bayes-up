@@ -116,14 +116,14 @@ input[type="file"] {
 
 h1 {
   width: 500px;
-  max-width: calc(100% - 16px);
+  max-width: calc(100% - 4px);
   font-size: 150%;
   margin: 4px;
 }
 
 h2 {
   width: 500px;
-  max-width: calc(100% - 16px);
+  max-width: calc(100% - 4px);
   font-size: 100%;
 }
 
@@ -180,7 +180,7 @@ h2 {
 
 table {
   width: 500px;
-  max-width: calc(100% - 16px);
+  max-width: calc(100% - 4px);
   margin: 8px 0px;
   padding: 0px;
   box-sizing: border-box;
@@ -237,6 +237,10 @@ th {
   width: 500;
   max-width: calc(100% - 4px);
   text-align: left;
+}
+
+.react-markdown h1 {
+  margin-left: 0px;
 }
 
 .quitQuizButton {

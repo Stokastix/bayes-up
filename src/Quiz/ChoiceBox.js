@@ -42,7 +42,7 @@ export default ({
   setGuess,
   submitted,
   isCorrect,
-  baseScore
+  nChoices
 }) => {
   const background = submitted && isCorrect ? "green" : "#bbbbbb";
 
@@ -51,7 +51,7 @@ export default ({
     setGuess(newValue);
   };
 
-  const score = computeScore(guess / 100);
+  const score = computeScore(guess / 100, nChoices);
 
   return (
     <div className="choiceContainer" style={{ background }}>

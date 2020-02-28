@@ -6,6 +6,21 @@ import { getColor } from "./utils";
 import "firebase/storage";
 import { withRouter, useParams } from "react-router-dom";
 
+const generateSteps = rawSteps => {
+  const steps = [];
+  for (var i = 0; i < rawSteps.length; i++) {
+    if (rawSteps[i][0] === "RANDOM") {
+      const r = Number(rawSteps[i][1]);
+      const z = i + 1 + Math.floor(Math.random() * r);
+      steps.push(rawSteps[z].filter(x => !!x));
+      i += r;
+    } else {
+      steps.push(rawSteps[i].filter(x => !!x));
+    }
+  }
+  return steps;
+};
+
 const FetchQuiz = ({ history, setQuiz }) => {
   const [background] = useState(getColor);
   const [quizStatus, setQuizStatus] = useState("fetch");
@@ -23,7 +38,8 @@ const FetchQuiz = ({ history, setQuiz }) => {
       relax_column_count: true
     };
     parse(data, options, (_, output) => {
-      setQuiz({ name, quizId, questions: output });
+      const questions = generateSteps(output);
+      setQuiz({ name, quizId, questions });
     });
   };
 
