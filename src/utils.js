@@ -66,11 +66,25 @@ export const shortID = n => {
 
 export const computeScore = (p, k) => {
   if (p < 0 || p > 1) console.error("p should be a probability");
-
-  // if (p < 0.01) return -10;
-  // if (p < 0.06) return -8;
   const loss = x => -Math.log2(Math.max(x, 0.02));
-  // const loss = x => (1 - x) ** 2;
   const score = (10 * (loss(1 / k) - loss(p))) / (loss(1 / k) - loss(1));
   return Math.round(10 * score) / 10;
+};
+
+export const generateSteps = rawSteps => {
+  // TODO this function does not allow nested RANDOMs
+
+  const steps = [];
+  for (var i = 0; i < rawSteps.length; i++) {
+    if (rawSteps[i][0] === "RANDOM") {
+      const r = Number(rawSteps[i][1]);
+      const z = i + 1 + Math.floor(Math.random() * r);
+      steps.push(rawSteps[z].filter(x => !!x));
+      i += r;
+    } else {
+      steps.push(rawSteps[i].filter(x => !!x));
+    }
+  }
+
+  return steps;
 };

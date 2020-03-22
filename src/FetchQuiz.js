@@ -2,24 +2,9 @@ import React, { useState } from "react";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 import parse from "csv-parse";
-import { getColor } from "./utils";
+import { getColor, generateSteps } from "./utils";
 import "firebase/storage";
 import { withRouter, useParams } from "react-router-dom";
-
-const generateSteps = rawSteps => {
-  const steps = [];
-  for (var i = 0; i < rawSteps.length; i++) {
-    if (rawSteps[i][0] === "RANDOM") {
-      const r = Number(rawSteps[i][1]);
-      const z = i + 1 + Math.floor(Math.random() * r);
-      steps.push(rawSteps[z].filter(x => !!x));
-      i += r;
-    } else {
-      steps.push(rawSteps[i].filter(x => !!x));
-    }
-  }
-  return steps;
-};
 
 const FetchQuiz = ({ history, setQuiz }) => {
   const [background] = useState(getColor);

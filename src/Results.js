@@ -8,30 +8,43 @@ import { getColor } from "./utils";
 const Results = ({ results, quiz }) => (
   <>
     <h2>Number of participants: {results.participants}</h2>
-    {Object.entries(quiz.questions).map(([k, [question, ...choices]]) => (
-      <table key={k}>
-        <thead>
-          <tr>
-            <th>Question {Number(k) + 1}</th>
-            <th></th>
-          </tr>
-          <tr>
-            <th>{question}</th>
-            <th>Average guess</th>
-          </tr>
-        </thead>
-        <tbody>
-          {choices.map((choice, i) => (
-            <tr key={i}>
-              <th>{choice}</th>
+    {Object.entries(quiz.steps).map(([k, c]) => {
+      var contentType, content;
+      if (c[0] === "YOUTUBE" || c[0] === "MARKDOWN" || c[0] === "QUESTION") {
+        [contentType, ...content] = c.filter(x => !!x);
+      } else {
+        contentType = "QUESTION";
+        content = c.filter(x => !!x);
+      }
+      const [question, ...choices] = content;
+
+      return (
+        <table key={k}>
+          <thead>
+            <tr>
               <th>
-                {(results[`${k}_${i}`] / results.participants).toFixed(0)}%
+                {contentType} {Number(k) + 1}
               </th>
+              <th></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    ))}
+            <tr>
+              <th>{question}</th>
+              <th>Average guess</th>
+            </tr>
+          </thead>
+          <tbody>
+            {choices.map((choice, i) => (
+              <tr key={i}>
+                <th>{choice}</th>
+                <th>
+                  {(results[`${k}_${i}`] / results.participants).toFixed(0)}%
+                </th>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+    })}
   </>
 );
 
@@ -51,18 +64,15 @@ export default () => {
     ref
       .getDownloadURL()
       .then(url => {
+        const options = {
+          trim: true,
+          skip_empty_lines: true,
+          relax_column_count: true
+        };
         fetch(url)
           .then(response => response.text())
           .then(data =>
-            parse(
-              data,
-              {
-                trim: true,
-                skip_empty_lines: true,
-                relax_column_count: true
-              },
-              (_, questions) => setQuiz({ quizId, questions })
-            )
+            parse(data, options, (_, steps) => setQuiz({ quizId, steps }))
           )
           .catch(() => setError("error"));
       })
