@@ -4,6 +4,178 @@ import * as firebase from "firebase/app";
 import { db } from "./";
 import { withRouter } from "react-router-dom";
 
+const Graph = ({ data }) => {
+  return (
+    <div className="stat-graph-container">
+      <svg className="stat-graph">
+        {new Array(11).fill(0).map((_, i) => {
+          const percentage = i * 10;
+          const target = 410 - 4 * percentage;
+          return (
+            <g key={`lines_${percentage}`}>
+              <line
+                x1={61 + i * 50}
+                y1="10"
+                x2={61 + i * 50}
+                y2="410"
+                style={{ strokeWidth: 1, stroke: "#0009" }}
+              />
+              <text x={50 + i * 50} y="425" fill="#000">
+                {percentage} %
+              </text>
+              <line
+                x1="50"
+                y1={target}
+                x2="575"
+                y2={target}
+                style={{ strokeWidth: 1, stroke: "#0009" }}
+              />
+              <text x="0" y={target} fill="#000">
+                {percentage} %
+              </text>
+            </g>
+          );
+        })}
+
+        {data.map(([freq, bot, top], i) => {
+          const percentage = i * 5;
+          const upper = 410 - 400 * top;
+          const lower = 410 - 400 * bot;
+          return (
+            <g key={`stats_${percentage}`}>
+              {freq !== null && (
+                <>
+                  <rect
+                    x={50 + i * 25}
+                    y={upper}
+                    width={22}
+                    height={lower - upper}
+                    style={{ fill: "#0009", strokeWidth: 1 }}
+                  />
+                  <circle
+                    cx={61 + i * 25}
+                    cy={410 - 400 * freq}
+                    r="5"
+                    fill="#000"
+                  />
+                </>
+              )}
+            </g>
+          );
+        })}
+
+        <line
+          x1="61"
+          y1="410"
+          x2="561"
+          y2="10"
+          style={{ stroke: "#000", strokeWidth: 2 }}
+        />
+      </svg>
+    </div>
+  );
+};
+
+const StatGraphBayes = ({ stats }) => {
+  const data = new Array(21).fill(0).map((_, i) => {
+    const target = 5 * i;
+
+    const s = stats[`correct_${target}%`] || 0; // number of correct answer
+    const f = stats[`incorrect_${target}%`] || 0; // number of incorrect answer
+    const n = s + f; // number of answers
+
+    if (n < 3) return [null, null, null];
+
+    const allProba = new Array(101)
+      .fill(0)
+      .map((_, i) => i / 100)
+      .map(p => p ** s * (1 - p) ** f);
+
+    const probaTotal = allProba.reduce((a, b) => a + b, 0);
+
+    var top = 100;
+    var top_loss = allProba[top];
+
+    var bot = 0;
+    var bot_loss = allProba[bot];
+
+    while (top_loss < 0.05 * probaTotal) {
+      top--;
+      top_loss += allProba[top];
+    }
+
+    while (bot_loss < 0.05 * probaTotal) {
+      bot++;
+      bot_loss += allProba[bot];
+    }
+
+    bot = bot / 100 - 0.01;
+    top = top / 100 + 0.01;
+
+    top = Math.min(1, top);
+    bot = Math.max(0, bot);
+
+    return [target / 100, bot, top];
+  });
+
+  return <Graph data={data} />;
+};
+
+function binomial(n, k) {
+  if (typeof n !== "number" || typeof k !== "number") return false;
+  var coeff = 1;
+  for (var x = 1; x <= k; x++) coeff /= x;
+  for (x = n - k + 1; x <= n; x++) coeff *= x;
+  return coeff;
+}
+
+const StatGraphFreq = ({ stats }) => {
+  const data = new Array(21).fill(0).map((_, i) => {
+    const target = 5 * i;
+
+    const p = target / 100;
+
+    const s = stats[`correct_${target}%`] || 0; // number of correct answer
+    const f = stats[`incorrect_${target}%`] || 0; // number of incorrect answer
+    const n = s + f; // number of answers
+
+    if (n < 3) return [null, null, null];
+
+    const freq = s / n;
+
+    const allProba = new Array(n + 1)
+      .fill(0)
+      .map((_, _s) => _s)
+      .map(_s => p ** _s * (1 - p) ** (n - _s) * binomial(n, _s));
+
+    var top = n;
+    var top_loss = allProba[top];
+
+    var bot = 0;
+    var bot_loss = allProba[bot];
+
+    while (top_loss < 0.05) {
+      top--;
+      top_loss += allProba[top];
+    }
+
+    while (bot_loss < 0.05) {
+      bot++;
+      bot_loss += allProba[bot];
+    }
+
+    bot = bot / n - 0.01;
+    top = top / n + 0.01;
+
+    top = Math.min(1, top);
+    bot = Math.max(0, bot);
+
+    return [freq, bot, top];
+  });
+
+  return <Graph data={data} />;
+};
+
 const Stats = ({ history }) => {
   const [background] = useState(getColor);
   const [stats, setStats] = useState(null);
@@ -38,76 +210,48 @@ const Stats = ({ history }) => {
     );
   }
 
-  const { groups, current } = new Array(101).fill(0).reduce(
-    ({ count, groups, current }, _, target) => {
-      const s = stats[`correct_${target}%`] || 0; // number of correct answer
-      const f = stats[`incorrect_${target}%`] || 0; // number of incorrect answer
-      const n = s + f; // number of answers
-
-      if (n === 0) return { count, groups, current };
-      current.push(target);
-      if (count + n > 30) {
-        groups.push(current);
-        return { count: 0, groups, current: [] };
-      } else {
-        return { count: count + n, groups, current };
-      }
-    },
-    { count: 0, groups: [], current: [] }
-  );
-  groups.push(current);
-
-  const _stats = groups.map(group => {
-    const [S, F, A, N] = group.reduce(
-      ([S, F, A, N], target) => {
-        const s = stats[`correct_${target}%`] || 0; // number of correct answer
-        const f = stats[`incorrect_${target}%`] || 0; // number of incorrect answer
-        const n = s + f; // number of answers
-        return [S + s, F + f, A + n * target, N + n];
-      },
-      [0, 0, 0, 0]
-    );
-    const target = A / N;
-    const interval =
-      group.length === 1 ? "" : ` (${group[0]}%~${group[group.length - 1]}%)`;
-    const avg = (S + 1) / (N + 2);
-    const std = (((S + 1) * (F + 1)) / (N + 3)) ** 0.5 / (N + 2);
-    return [target, interval, avg, std, N];
-  });
-
   return (
     <div id="stats" className="rootColumn" style={{ background }}>
       <h1>Stats</h1>
-      <h2>Lifetime cummulated score: {stats.totalScore}</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Target</th>
-            <th>Avg</th>
-            <th>Std</th>
-          </tr>
-        </thead>
-        <tbody>
-          {_stats.map(([target, interval, avg, std, N]) => {
-            return (
-              N > 0 && (
-                <tr key={target}>
-                  <th>
-                    {target.toFixed()}%{interval}
-                  </th>
-                  <th>{(100 * avg).toFixed(0)}%</th>
-                  <th>±{(100 * std).toFixed(0)}%</th>
-                </tr>
-              )
-            );
-          })}
-        </tbody>
-      </table>
+      {stats.totalScore && (
+        <h2>Lifetime cummulated score: {stats.totalScore.toFixed(1)}</h2>
+      )}
+
+      <h2 className="stat-explanation">
+        The visualizations below show your calibration. Over all the times you
+        have answered 70% has it been the correct answer exactly 70% of the
+        time? When you said 0% has it really never been the correct answer? If
+        the answers to these questions are yes, you seem to be well calibrated.
+        The graphs below show you an estimation of your calibration for each
+        probabilities you have answered so far.
+      </h2>
+
+      <h2>- - - - - - -</h2>
+
+      <h2 className="stat-explanation">
+        The grey bars are 90% confidence intervals of your probability of
+        correctness based on a uniform prior distribution over [0%-100%]. The
+        black dots show the probability you should converge to if you are
+        perfectly calibrated.
+      </h2>
+
+      <StatGraphBayes stats={stats} />
+
+      <h2>- - - - - - -</h2>
+
+      <h2 className="stat-explanation">
+        The black dots show the exact ratio of correctness from the questions
+        you have answered with each probability. The grey bars show where the
+        ratio should be with 90% probability if you are perfectly calibrated.
+      </h2>
+
+      <StatGraphFreq stats={stats} />
+
       <button
         className="fullwidth-button"
         onClick={() => history.push("/home")}
       >
-        Back to Home
+        Home
       </button>
     </div>
   );

@@ -7,7 +7,7 @@ const CustomSlider = withStyles({
     height: 24,
     padding: "6px 0px",
     flex: "0 0 auto",
-    width: "80%"
+    width: "95%"
   },
   thumb: {
     height: 32,
@@ -21,6 +21,7 @@ const CustomSlider = withStyles({
       boxShadow: "inherit"
     }
   },
+  active: {},
   track: {
     height: 24,
     borderRadius: 2,
@@ -33,30 +34,44 @@ const CustomSlider = withStyles({
   }
 })(Slider);
 
-export default ({ choice, guess, setGuess, background, submitted }) => {
+export default ({
+  choice,
+  guess,
+  setGuess,
+  submitted,
+  isCorrect,
+  baseScore
+}) => {
+  const background = submitted && isCorrect ? "green" : "#bbbbbb";
+
   const handleSliderChange = (event, newValue) => {
     if (submitted) return;
     setGuess(newValue);
   };
 
+  const error = isCorrect ? (100 - guess) ** 2 / 1000 : guess ** 2 / 1000;
+  const scoreIfRight = 10 - (100 - guess) ** 2 / 1000;
+  const scoreIfWrong = guess ** 2 / 1000;
+  const score = isCorrect ? scoreIfRight : scoreIfWrong;
+
+  const colorRight = !submitted || isCorrect ? "black" : "transparent";
+  const colorWrong = !submitted || !isCorrect ? "black" : "transparent";
+
   return (
     <div className="choiceContainer" style={{ background }}>
       <div className="choice">
-        <button
-          className="fullwidth-button"
-          disabled={guess < 1 || submitted}
-          onClick={() => setGuess(guess - 5)}
-        >
-          -
-        </button>
-        <span>{choice}</span>
-        <button
-          className="fullwidth-button"
-          disabled={guess > 99 || submitted}
-          onClick={() => setGuess(guess + 5)}
-        >
-          +
-        </button>
+        <div className="choiceText">
+          <span>{choice}</span>
+        </div>
+      </div>
+      <div className="sliderValue">
+        <span style={{ color: colorRight }}>
+          +{scoreIfRight.toFixed(scoreIfRight % 10 === 0 ? 0 : 2)}
+        </span>
+        <span>{guess.toFixed(0)}%</span>
+        <span style={{ color: colorWrong }}>
+          -{scoreIfWrong.toFixed(scoreIfWrong % 10 === 0 ? 0 : 2)}
+        </span>
       </div>
       <div className="sliderContainer">
         <CustomSlider
@@ -65,7 +80,6 @@ export default ({ choice, guess, setGuess, background, submitted }) => {
           aria-labelledby="input-slider"
           step={5}
         />
-        <span className="sliderValue">{guess}%</span>
       </div>
     </div>
   );

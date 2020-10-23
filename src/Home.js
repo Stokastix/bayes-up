@@ -6,19 +6,22 @@ const Home = ({ history }) => {
   const [background] = useState(getColor);
   return (
     <div id="home" className="rootColumn" style={{ background }}>
-      <h1>Bayesian Quiz</h1>
-      <h1>[This is a Work in Progress]</h1>
-      <h1>[Expect to see features break, disappear, or change quickly]</h1>
+      <h1>Bayes-Up!</h1>
+      <h2>- - - - - -</h2>
       <h2>
-        This app lets you answer Bayesian Multiple Choice Quiz. They are the
-        same as MCQ except that instead of selecting an answer, you select
-        probabilities you assign to each possible choice. Have fun
+        Bayes-Up is still in Beta version.
+        <br />
+        Feedback on bugs or features is welcome.
+        <br />
+        We are on Github:{" "}
+        <a href="https://github.com/Stokastix/bayes-up">Bayes-Up</a>
       </h2>
+      <h2>- - - - - -</h2>
       <button
         className="fullwidth-button"
         onClick={() => history.push("/quizList")}
       >
-        Take a Quiz
+        See Quizzes
       </button>
       <button
         className="fullwidth-button"

@@ -24,29 +24,34 @@ code {
 }
 
 .rootColumn {
-  height: 100%;
-  width: 100%;
+  height: calc(100% - 70px);
+  width: calc(100% - 12px);
   display: flex;
   flex-direction: column;
   align-items: center;
   overflow: auto;
+  padding: 6px;
+  padding-bottom: 64px;
 }
 
 .fullwidth-button {
   min-height: 52px;
   font-size: 150%;
-  width: 500px;
-  max-width: calc(100% - 16px);
+  width: calc(500px - 6px);
+  max-width: calc(100% - 6px);
   flex: 0 0 auto;
   background: none;
 
-  border: 4px solid #000000;
-  margin: 4px;
-  padding: 0;
+  border: 3px solid #000000;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 0px;
 
   font-weight: 500;
   color: #000000;
   text-align: center;
+
+  box-sizing: content-box;
 }
 
 .fullwidth-button:hover {
@@ -66,11 +71,14 @@ code {
 .editor-input {
   min-height: 52px;
   font-size: 150%;
-  width: 500px;
-  max-width: calc(100% - 16px);
-  border: 4px solid #000000;
-  margin: 4px;
-  padding: 0;
+  width: calc(500px - 6px);
+  max-width: calc(100% - 6px);
+
+  border: 3px solid #000000;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 0px;
+
   font-weight: 500;
   color: #000000;
   text-align: center;
@@ -78,7 +86,6 @@ code {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-sizing: border-box;
 }
 
 .editor-input:hover {
@@ -91,12 +98,15 @@ input[type="file"] {
 }
 
 .question-input {
-  width: 500px;
-  max-width: calc(100% - 16px);
-  border: 4px solid #000000;
-  margin: 4px;
+  position: relative;
+
+  width: calc(500px - 14px);
+  max-width: calc(100% - 14px);
+
+  border: 3px solid #000000;
+  margin-top: 4px;
+  margin-bottom: 4px;
   padding: 4px;
-  box-sizing: border-box;
 
   display: flex;
   flex-direction: column;
@@ -117,20 +127,8 @@ h2 {
   font-size: 100%;
 }
 
-.progresscontainer {
-  margin: 0px 4px;
-  position: relative;
-  height: 42px;
-  border: 3px solid #000000;
-  border-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .progressbar {
   background: #00000099;
-  border-radius: 2px;
   height: 100%;
   position: absolute;
   top: 0;
@@ -139,10 +137,11 @@ h2 {
 
 .choiceContainer {
   width: 484px;
-  max-width: calc(100% - 32px);
+  max-width: calc(100% - 12px);
   margin: 3px;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 6px;
+  padding-bottom: 2px;
+  padding-top: 4px;
   background: #bbbbbb;
   display: flex;
   flex-direction: column;
@@ -151,10 +150,13 @@ h2 {
 
 .choice {
   width: 100%;
+  height: 100%;
   display: flex;
-  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
+/* 
 .choice button {
   width: 32px;
   height: 32px;
@@ -163,11 +165,17 @@ h2 {
   font-weight: 900;
   border: 3px solid #000000;
   border-radius: 2px;
-}
+} */
 
-.choice span {
-  flex: 1;
+.choiceText {
+  height: calc(100% - 8px);
+  flex: 1 0 0px;
+
+  padding: 4px;
   font-size: 120%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 table {
@@ -176,7 +184,7 @@ table {
   margin: 8px 0px;
   padding: 0px;
   box-sizing: border-box;
-  border: 4px solid black;
+  border: 3px solid black;
   border-collapse: collapse;
 }
 
@@ -193,34 +201,69 @@ th {
   position: relative;
   width: calc(100% - 16px);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .sliderValue {
-  flex: 0;
-  text-align: center;
+  width: calc(100% - 24px);
+  padding: 2px;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  font-family: "Lucida Console", Monaco, monospace;
+
+  font-size: 100%;
+  font-weight: bold;
 }
 
 .quiz-header {
   width: 500px;
-  max-width: calc(100% - 16px);
+  max-width: calc(100% - 4px);
   margin: 0px;
   margin-bottom: 12px;
-  padding: 4px;
-  box-sizing: border-box;
 
-  border-bottom: 3px solid black;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.quiz-header button {
-  padding: 8px;
+.quitQuizButton {
   font-size: 100%;
-  border: 2px solid black;
+  border: 2px solid #000000;
   background: none;
+  height: 32px;
+  margin: 0px;
+  padding-left: 8px;
+  padding-right: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.quiz-progress {
+  position: relative;
+  flex: 1 0 0px;
+
+  margin-right: 4px;
+  padding: 0px;
+  border: 2px solid #000000;
+  height: 32px;
+}
+
+.quiz-progress span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.quiz-progress div {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: #00000066;
+  height: 100%;
 }
 
 .quiz-header h1 {
@@ -230,4 +273,26 @@ th {
 .share-link {
   font-size: 150%;
   margin-bottom: 16px;
+}
+
+.stat-graph-container {
+  width: 625px;
+  max-width: calc(100% - 4px);
+  height: 450px;
+  flex: 0 0 auto;
+
+  overflow: auto;
+}
+
+.stat-graph {
+  height: 440px;
+  width: 625px;
+}
+
+svg text {
+  transform: translate(0, 5px);
+}
+
+.stat-explanation {
+  text-align: justify;
 }

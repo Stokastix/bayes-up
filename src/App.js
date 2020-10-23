@@ -7,6 +7,8 @@ import Stats from "./Stats";
 import Settings from "./Settings";
 import SignIn from "./SignIn";
 import FetchQuiz from "./FetchQuiz";
+import Share from "./Share";
+import Results from "./Results";
 import MyQuizzes from "./MyQuizzes";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
@@ -33,7 +35,10 @@ const App = () => {
               <Quiz quiz={quiz} setQuiz={setQuiz} />
             </Route>
             <Route exact path="/editor">
-              <Editor quiz={quiz} />
+              <Editor />
+            </Route>
+            <Route exact path="/e/:quizId">
+              <Editor />
             </Route>
             <Route exact path="/stats">
               <Stats />
@@ -43,6 +48,12 @@ const App = () => {
             </Route>
             <Route exact path="/q/:quizId">
               <FetchQuiz setQuiz={setQuiz} path={path} />
+            </Route>
+            <Route exact path="/r/:quizId">
+              <Results />
+            </Route>
+            <Route exact path="/s/:quizId">
+              <Share />
             </Route>
             <Route exact path="/myquizzes">
               <MyQuizzes />

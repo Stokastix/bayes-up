@@ -2,21 +2,35 @@ import React, { useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import * as firebase from "firebase/app";
 
+import parse from "csv-parse";
 import stringify from "csv-stringify";
 
 import { getColor, shortID } from "./utils";
-import { withRouter } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 const CSVEditor = ({ setEditor, setQuiz }) => {
   const [background] = useState(getColor);
+  const [error, setError] = useState(false);
+
   const handleFile = e => {
     const reader = new FileReader();
-    const name = e.target.value.split(/(\\|\/)/g).pop();
     reader.onload = function() {
-      const text = reader.result;
-      const questions = text.split("\n").map(x => x.split(","));
-      setQuiz({ name, questions });
-      setEditor("online");
+      setError(false);
+
+      const data = reader.result;
+      const options = {
+        trim: true,
+        skip_empty_lines: true,
+        relax_column_count: true
+      };
+      parse(data, options, (err, output) => {
+        if (err) {
+          setError(err.message);
+          return;
+        }
+        setEditor("online");
+        setQuiz({ quizId: shortID(12), name: "", questions: output });
+      });
     };
     reader.readAsText(e.target.files[0]);
   };
@@ -32,6 +46,12 @@ const CSVEditor = ({ setEditor, setQuiz }) => {
         <input type="file" accept=".csv" onChange={handleFile} />
         <span>Select File</span>
       </label>
+      {error && (
+        <div className="choiceContainer">
+          <h2>ERROR: Looks like your CSV has the wrong format.</h2>
+          <span style={{ color: "red", textAlign: "left" }}>{error}</span>
+        </div>
+      )}
       <button className="fullwidth-button" onClick={() => setEditor(null)}>
         Go Back
       </button>
@@ -87,16 +107,19 @@ const QuestionEditorBox = ({ question, setQuestion, deleteQuestion }) => {
   );
 };
 
-const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
+const OnlineEditor = ({ setEditor, quiz, setQuiz }) => {
+  const history = useHistory();
   const [background] = useState(getColor);
+  const [errors, setErrors] = useState([]);
 
   const addQuestion = () => {
-    const { name, questions } = quiz;
-    setQuiz({ name, questions: [...questions, ["", "", "", "", ""]] });
+    const { questions } = quiz;
+    setQuiz(q => ({ ...q, questions: [...questions, ["", "", "", "", ""]] }));
   };
 
   const handleNameChange = e => {
-    setQuiz({ name: e.target.value, questions: quiz.questions });
+    const name = e.target.value;
+    setQuiz(q => ({ ...q, name }));
   };
 
   const setQuestion = i => q => {
@@ -110,29 +133,42 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
   };
 
   const checkQuiz = () => {
-    // TODO
-    return true;
+    const errorList = [];
+    const { name, questions } = quiz;
+    if (!name) errorList.push("The name of the quiz is missing.");
+    if (questions.length === 0)
+      errorList.push("The quiz should have at least one question.");
+    questions.forEach(([q, a, b], i) => {
+      if (!q) errorList.push(`The question of question ${i + 1} is missing.`);
+      if (!a)
+        errorList.push(`The correct answer of question ${i + 1} is missing.`);
+      if (!b)
+        errorList.push(`The incorrect answer of question ${i + 1} is missing.`);
+    });
+    setErrors(errorList);
+    return errorList.length === 0;
   };
 
   const handleSubmit = () => {
-    if (!checkQuiz()) alert("quiz configuration has errors.");
-    setEditor("share");
-
-    const { name, questions } = quiz;
-    stringify([[name || "No Name"], ...questions], (err, output) => {
-      console.log(output);
-      const storageRef = firebase.storage().ref();
-      const ref = storageRef.child(`quizzes/${quizId}.csv`);
-      ref.putString(output).then(snapshot => {
-        console.log("Uploaded a quiz");
-        console.log(snapshot);
-      });
-    });
+    if (!checkQuiz()) return;
 
     const db = firebase.firestore();
     const user = firebase.auth().currentUser;
     if (!user) return;
     const userid = user.uid;
+    const username = user.displayName || "Guest User";
+
+    const { quizId } = quiz;
+    history.push(`/s/${quizId}`);
+
+    const { name, questions } = quiz;
+    stringify(questions, (err, output) => {
+      const storageRef = firebase.storage().ref();
+      const ref = storageRef.child(`quizzes/${quizId}.csv`);
+      const blob = new Blob([output], { type: "text/plain" });
+      ref.put(blob, { customMetadata: { userid, username, name } });
+    });
+
     db.collection("quizzes")
       .doc(userid)
       .set(
@@ -142,6 +178,15 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
         { merge: true }
       );
   };
+
+  if (!quiz || quiz.name === undefined || !quiz.questions) {
+    return (
+      <div id="editor" className="rootColumn" style={{ background }}>
+        <h1>Editor</h1>
+        <span>Fetching Quiz. . .</span>
+      </div>
+    );
+  }
 
   return (
     <div id="editor" className="rootColumn" style={{ background }}>
@@ -162,6 +207,9 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
       <button className="fullwidth-button" onClick={addQuestion}>
         Add Question
       </button>
+      {errors.map(e => (
+        <span key={e}>ERROR: {e}</span>
+      ))}
       <button className="fullwidth-button" onClick={handleSubmit}>
         Submit Quiz
       </button>
@@ -172,59 +220,69 @@ const OnlineEditor = ({ setEditor, quiz, setQuiz, quizId }) => {
   );
 };
 
-const DisplayShare = ({ history, quizId }) => {
+const Editor = () => {
+  const history = useHistory();
+  const { quizId } = useParams();
   const [background] = useState(getColor);
+  const [editor, setEditor] = useState(quizId ? "online" : null);
+  const [quiz, setQuiz] = useState(null);
 
-  const URL = `${window.location.host}/q/${quizId}`;
+  if (quizId && !quiz) {
+    // Fetching Quiz and filling in the editor
+    const storage = firebase.storage().ref();
+    const ref = storage.child("quizzes/" + quizId + ".csv");
 
-  const copyToClipboard = () => {
-    const el = document.createElement("textarea");
-    el.value = URL;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand("copy");
-    document.body.removeChild(el);
-  };
-  return (
-    <div id="editor" className="rootColumn" style={{ background }}>
-      <h1>Quiz Created!</h1>
-      <h2>Your quiz is now available at the URL:</h2>
-      <a className="share-link" href={URL}>
-        {URL}
-      </a>
-      <button className="fullwidth-button" onClick={copyToClipboard}>
-        Copy URL
-      </button>
-      <button
-        className="fullwidth-button"
-        onClick={() => history.push("/home")}
-      >
-        Home
-      </button>
-    </div>
-  );
-};
+    ref
+      .getMetadata()
+      .then(metadata => {
+        setQuiz(q => ({ ...q, name: metadata.customMetadata.name }));
+      })
+      .catch(err => {});
 
-const Editor = ({ history }) => {
-  const [background] = useState(getColor);
-  const [editor, setEditor] = useState(null);
-  const [quiz, setQuiz] = useState({
-    name: "",
-    questions: [["", "", "", "", ""]]
-  });
-  const [quizId] = useState(shortID(12));
+    ref
+      .getDownloadURL()
+      .then(url => {
+        fetch(url)
+          .then(response => response.text())
+          .then(data => {
+            const options = {
+              trim: true,
+              skip_empty_lines: true,
+              relax_column_count: true
+            };
+            parse(data, options, (_, questions) => {
+              setQuiz(q => ({ ...q, quizId, questions }));
+            });
+          });
+      })
+      .catch(err => {});
+  }
 
   if (editor === null) {
     return (
       <div id="editor" className="rootColumn" style={{ background }}>
         <h1>Create a Quiz</h1>
         <h2>You can create your own quiz and share it.</h2>
-        <button className="fullwidth-button" onClick={() => setEditor("csv")}>
+        <button
+          className="fullwidth-button"
+          onClick={() => {
+            history.push("/editor");
+            setEditor("csv");
+          }}
+        >
           Create from a CSV file
         </button>
         <button
           className="fullwidth-button"
-          onClick={() => setEditor("online")}
+          onClick={() => {
+            history.push("/editor");
+            setEditor("online");
+            setQuiz({
+              name: "",
+              quizId: shortID(12),
+              questions: [["", "", "", "", ""]]
+            });
+          }}
         >
           Create online
         </button>
@@ -232,7 +290,7 @@ const Editor = ({ history }) => {
           className="fullwidth-button"
           onClick={() => history.push("/home")}
         >
-          Go Back
+          Home
         </button>
       </div>
     );
@@ -243,19 +301,8 @@ const Editor = ({ history }) => {
   }
 
   if (editor === "online") {
-    return (
-      <OnlineEditor
-        setEditor={setEditor}
-        quiz={quiz}
-        setQuiz={setQuiz}
-        quizId={quizId}
-      />
-    );
-  }
-
-  if (editor === "share") {
-    return <DisplayShare history={history} quizId={quizId} />;
+    return <OnlineEditor setEditor={setEditor} quiz={quiz} setQuiz={setQuiz} />;
   }
 };
 
-export default withRouter(Editor);
+export default Editor;
